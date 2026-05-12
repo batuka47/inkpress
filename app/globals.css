@@ -1,26 +1,203 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+/* ─── InkPress Design Tokens ─────────────────────────────── */
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-violet:        #5B3ADB;
+  --color-violet-dark:   #3B1FA8;
+  --color-violet-light:  #EDE9FF;
+  --color-violet-muted:  #9B83F4;
+  --color-ink-black:     #0F0F1A;
+  --color-ink-gray:      #6B7280;
+  --color-rule-gray:     #E5E7EB;
+  --color-white-warm:    #FFFFFF;
+
+  --font-sans: var(--font-inter);
+  --font-meta: var(--font-dm-mono);
+
+  --text-hero:    clamp(2rem, 4vw, 3.25rem);
+  --text-section: clamp(1.25rem, 2.5vw, 1.75rem);
+  --text-article: 1.125rem;
+  --text-body:    1rem;
+  --text-caption: 0.75rem;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* ─── CSS Custom Properties ──────────────────────────────── */
+
+:root {
+  --color-bg:           #FFFFFF;
+  --color-surface:      #F9FAFB;
+  --color-nav:          #111827;
+  --color-text:         #111827;
+  --color-text-muted:   #6B7280;
+  --color-rule:         #E5E7EB;
+  --color-accent:       #5B3ADB;
+  --color-accent-dark:  #3B1FA8;
+  --color-accent-light: #EDE9FF;
+}
+
+/* ─── Base ───────────────────────────────────────────────── */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  color-scheme: light;
+  background-color: #FFFFFF;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: #FFFFFF;
+  color: var(--color-text);
+  font-family: var(--font-inter), system-ui, -apple-system, sans-serif;
+  font-size: var(--text-body);
+  line-height: 1.7;
+  min-height: 100dvh;
 }
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-inter), system-ui, sans-serif;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  color: var(--color-text);
+}
+
+/* ─── Article Card ───────────────────────────────────────── */
+
+.card {
+  background: #FFFFFF;
+  border: 1px solid var(--color-rule);
+  border-radius: 12px;
+  overflow: hidden;
+  transition: box-shadow 200ms ease, transform 200ms ease;
+}
+
+.card:hover {
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+  transform: translateY(-2px);
+}
+
+/* ─── Category pill ──────────────────────────────────────── */
+
+.category-badge {
+  display: inline-block;
+  font-family: var(--font-inter), sans-serif;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 0.25em 0.75em;
+  border-radius: 999px;
+  background-color: var(--color-accent-light);
+  color: var(--color-accent);
+  border: none;
+}
+
+/* ─── Article body ───────────────────────────────────────── */
+
+.article-body {
+  font-family: var(--font-inter), sans-serif;
+  font-size: 1.0625rem;
+  line-height: 1.8;
+  color: var(--color-text);
+}
+
+.article-body p { margin-bottom: 1.5em; }
+
+.article-body h2 {
+  font-size: 1.5rem;
+  margin-top: 2em;
+  margin-bottom: 0.75em;
+  letter-spacing: -0.02em;
+}
+
+.article-body h3 {
+  font-size: 1.2rem;
+  margin-top: 1.75em;
+  margin-bottom: 0.5em;
+}
+
+.article-caption {
+  font-family: var(--font-dm-mono), monospace;
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  margin-top: 0.5rem;
+}
+
+/* ─── Pull quote ─────────────────────────────────────────── */
+
+.pull-quote {
+  border-left: 3px solid var(--color-accent);
+  padding: 1rem 1.5rem;
+  margin: 2rem 0;
+  font-size: 1.2rem;
+  font-style: italic;
+  font-weight: 500;
+  color: var(--color-text);
+  background: var(--color-accent-light);
+  border-radius: 0 8px 8px 0;
+}
+
+/* ─── Breaking ticker ────────────────────────────────────── */
+
+@keyframes ticker-scroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+.ticker-track {
+  display: flex;
+  white-space: nowrap;
+  animation: ticker-scroll 30s linear infinite;
+  will-change: transform;
+}
+
+.ticker-track:hover { animation-play-state: paused; }
+
+/* ─── Reveal animation ───────────────────────────────────── */
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.ink-reveal {
+  animation: fade-up 350ms ease forwards;
+  opacity: 0;
+}
+
+/* ─── Headline hover ─────────────────────────────────────── */
+
+.headline-link {
+  text-decoration: none;
+  background-image: linear-gradient(var(--color-accent), var(--color-accent));
+  background-repeat: no-repeat;
+  background-size: 0% 2px;
+  background-position: left bottom;
+  transition: background-size 200ms ease;
+}
+
+.headline-link:hover { background-size: 100% 2px; }
+
+/* ─── Image hover ────────────────────────────────────────── */
+
+.article-image-wrap { overflow: hidden; }
+.article-image-wrap img { transition: transform 300ms ease; }
+.article-image-wrap:hover img { transform: scale(1.03); }
+
+/* ─── Newspaper-compat helpers ───────────────────────────── */
+
+.newspaper-rule      { border: none; border-top: 1px solid var(--color-rule); margin: 1.5rem 0; }
+.newspaper-rule-thick { border: none; border-top: 2px solid var(--color-text); margin: 0.25rem 0; }
+.violet-stripe       { height: 3px; background: var(--color-accent); width: 100%; }
+.drop-cap::first-letter { font-size: 3.5em; font-weight: 800; line-height: 0.75; float: left; margin-right: 0.1em; margin-top: 0.1em; color: var(--color-accent); }
+
+/* ─── Scrollbar ──────────────────────────────────────────── */
+
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #F9FAFB; }
+::-webkit-scrollbar-thumb { background: #D1D5DB; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--color-accent); }
