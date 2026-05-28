@@ -10,7 +10,7 @@ export default async function CategoriesPage() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { data: categories } = await (supabase as any)
     .from("categories")
-    .select("id, name, slug, description, color_hex, display_order")
+    .select("id, name, name_mn, slug, description, color_hex, display_order")
     .order("display_order", { ascending: true });
 
   return (

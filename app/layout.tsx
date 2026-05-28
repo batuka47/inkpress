@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter, DM_Mono } from "next/font/google";
+import { LanguageProvider } from "@/components/LanguageProvider";
 import "./globals.css";
 
 const inter = Inter({
@@ -17,12 +18,12 @@ const dmMono = DM_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "InkPress",
-    template: "%s — InkPress",
+    default: "AmjiltPress",
+    template: "%s — AmjiltPress",
   },
   description: "News as it should be read — beautifully.",
   openGraph: {
-    siteName: "InkPress",
+    siteName: "AmjiltPress",
     type: "website",
   },
 };
@@ -38,7 +39,7 @@ export default function RootLayout({
       className={`${inter.variable} ${dmMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-white text-(--color-text)">
-        {children}
+        <LanguageProvider>{children}</LanguageProvider>
       </body>
     </html>
   );

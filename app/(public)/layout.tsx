@@ -9,7 +9,7 @@ export default async function PublicLayout({ children }: { children: React.React
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { data: categories } = await (supabase as any)
     .from("categories")
-    .select("name, slug")
+    .select("name, name_mn, slug")
     .order("display_order", { ascending: true });
 
   const extra = (categories ?? []).filter(

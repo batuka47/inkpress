@@ -15,11 +15,15 @@ export type Database = {
         Row: {
           id: string;
           title: string;
+          title_mn: string | null;
           slug: string;
           excerpt: string | null;
+          excerpt_mn: string | null;
           body: Json | null;
+          body_mn: Json | null;
           cover_image_url: string | null;
           pdf_url: string | null;
+          pdf_url_mn: string | null;
           category_id: string | null;
           author_id: string | null;
           status: "draft" | "published" | "archived";
@@ -43,6 +47,7 @@ export type Database = {
         Row: {
           id: string;
           name: string;
+          name_mn: string | null;
           slug: string;
           description: string | null;
           color_hex: string | null;
@@ -87,6 +92,7 @@ export type Database = {
         Row: {
           id: string;
           text: string;
+          text_mn: string | null;
           link_article_id: string | null;
           active: boolean;
           created_at: string;

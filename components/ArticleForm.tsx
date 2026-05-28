@@ -13,11 +13,15 @@ interface Tag      { id: string; name: string; }
 interface ArticleData {
   id?: string;
   title?: string;
+  title_mn?: string | null;
   slug?: string;
   excerpt?: string;
+  excerpt_mn?: string | null;
   body?: object | null;
+  body_mn?: object | null;
   cover_image_url?: string | null;
   pdf_url?: string | null;
+  pdf_url_mn?: string | null;
   category_id?: string | null;
   status?: "draft" | "published" | "archived";
   is_breaking?: boolean;
@@ -36,38 +40,92 @@ function slugify(text: string) {
   return text.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 }
 
+function PdfUploadField({ url, fileName, uploading, onUpload, onRemove }: {
+  url: string; fileName: string | null; uploading: boolean;
+  onUpload: (f: File) => void; onRemove: () => void;
+}) {
+  if (url) {
+    return (
+      <div className="flex items-center gap-3 border border-[--color-accent] bg-[--color-accent-light] rounded-lg px-4 py-3">
+        <svg className="w-5 h-5 text-[--color-accent] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+        </svg>
+        <span className="text-sm font-medium text-[--color-accent] flex-1 truncate">{fileName}</span>
+        <button type="button" onClick={onRemove} className="text-xs text-[--color-accent] hover:underline shrink-0">Remove</button>
+      </div>
+    );
+  }
+  return (
+    <label className="flex flex-col items-center justify-center gap-3 border-2 border-dashed border-[--color-rule] rounded-xl p-8 cursor-pointer hover:border-[--color-accent] hover:bg-[--color-accent-light] transition-colors">
+      {uploading
+        ? <span className="text-sm text-[--color-text-muted]">Uploading PDF…</span>
+        : <>
+            <svg className="w-8 h-8 text-[--color-text-muted]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+            </svg>
+            <span className="text-sm text-[--color-text-muted]">Click to upload a PDF (max 50 MB)</span>
+          </>
+      }
+      <input type="file" accept="application/pdf" className="hidden"
+        onChange={(e) => { const f = e.target.files?.[0]; if (f) onUpload(f); }} />
+    </label>
+  );
+}
+
 export default function ArticleForm({ article, categories, tags, selectedTagIds = [], authorId }: Props) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const isEditing = !!article?.id;
 
-  const [title,          setTitle]         = useState(article?.title           ?? "");
-  const [slug,           setSlug]          = useState(article?.slug            ?? "");
-  const [excerpt,        setExcerpt]       = useState(article?.excerpt         ?? "");
-  const [body,           setBody]          = useState<object>(article?.body    ?? { type: "html", html: "" });
-  const [coverUrl,       setCoverUrl]      = useState(article?.cover_image_url ?? "");
-  const [pdfUrl,         setPdfUrl]        = useState(article?.pdf_url         ?? "");
-  const [categoryId,     setCategoryId]    = useState(article?.category_id     ?? "");
-  const [status,         setStatus]        = useState<"draft"|"published"|"archived">(article?.status ?? "draft");
-  const [isBreaking,     setIsBreaking]    = useState(article?.is_breaking     ?? false);
-  const [isFeatured,     setIsFeatured]    = useState(article?.is_featured     ?? false);
-  const [pickedTagIds,   setPickedTagIds]  = useState<string[]>(selectedTagIds);
-  const [error,          setError]         = useState<string | null>(null);
+  // Article type
+  const [articleType, setArticleType] = useState<"normal" | "pdf">(article?.pdf_url ? "pdf" : "normal");
+
+  // Language tab (for content fields)
+  const [langTab, setLangTab] = useState<"en" | "mn">("en");
+
+  // Meta fields (language-independent)
+  const [slug,        setSlug]       = useState(article?.slug            ?? "");
+  const [categoryId,  setCategoryId] = useState(article?.category_id     ?? "");
+  const [status,      setStatus]     = useState<"draft"|"published"|"archived">(article?.status ?? "draft");
+  const [isBreaking,  setIsBreaking] = useState(article?.is_breaking     ?? false);
+  const [isFeatured,  setIsFeatured] = useState(article?.is_featured     ?? false);
+  const [pickedTagIds,setPickedTagIds] = useState<string[]>(selectedTagIds);
+  const [coverUrl,      setCoverUrl]      = useState(article?.cover_image_url ?? "");
+  const [pdfUrl,        setPdfUrl]        = useState(article?.pdf_url         ?? "");
+  const [pdfUrlMn,      setPdfUrlMn]      = useState(article?.pdf_url_mn      ?? "");
   const [coverUploading, setCoverUploading] = useState(false);
-  const [pdfUploading,   setPdfUploading]  = useState(false);
-  const [pdfFileName,    setPdfFileName]   = useState<string | null>(
+  const [pdfUploading,   setPdfUploading]   = useState(false);
+  const [pdfUploadingMn, setPdfUploadingMn] = useState(false);
+  const [pdfFileName,    setPdfFileName]    = useState<string | null>(
     article?.pdf_url ? article.pdf_url.split("/").pop() ?? null : null
   );
+  const [pdfFileNameMn, setPdfFileNameMn] = useState<string | null>(
+    article?.pdf_url_mn ? article.pdf_url_mn.split("/").pop() ?? null : null
+  );
+  const [error, setError] = useState<string | null>(null);
 
-  function handleTitleChange(v: string) {
-    setTitle(v);
+  // English content
+  const [titleEn,   setTitleEn]   = useState(article?.title   ?? "");
+  const [excerptEn, setExcerptEn] = useState(article?.excerpt ?? "");
+  const [bodyEn,    setBodyEn]    = useState<object>(article?.body    ?? { type: "html", html: "" });
+
+  // Mongolian content
+  const [titleMn,   setTitleMn]   = useState(article?.title_mn   ?? "");
+  const [excerptMn, setExcerptMn] = useState(article?.excerpt_mn ?? "");
+  const [bodyMn,    setBodyMn]    = useState<object>(article?.body_mn   ?? { type: "html", html: "" });
+
+  function handleTitleEnChange(v: string) {
+    setTitleEn(v);
     if (!isEditing) setSlug(slugify(v));
   }
 
+  function switchType(t: "normal" | "pdf") {
+    setArticleType(t);
+    if (t === "normal") { setPdfUrl(""); setPdfFileName(null); }
+  }
+
   function toggleTag(id: string) {
-    setPickedTagIds((prev) =>
-      prev.includes(id) ? prev.filter((t) => t !== id) : [...prev, id]
-    );
+    setPickedTagIds((prev) => prev.includes(id) ? prev.filter((t) => t !== id) : [...prev, id]);
   }
 
   async function uploadCover(file: File) {
@@ -95,19 +153,37 @@ export default function ArticleForm({ article, categories, tags, selectedTagIds 
     setPdfUrl(publicUrl);
   }
 
+  async function uploadPDFMn(file: File) {
+    if (file.type !== "application/pdf") { setError("Please select a PDF file."); return; }
+    const supabase = createClient();
+    const path = `articles/${crypto.randomUUID()}.pdf`;
+    setPdfUploadingMn(true);
+    setPdfFileNameMn(file.name);
+    const { data, error } = await supabase.storage.from("pdfs").upload(path, file, { contentType: "application/pdf" });
+    setPdfUploadingMn(false);
+    if (error || !data) { setError(error?.message ?? "PDF upload failed"); return; }
+    const { data: { publicUrl } } = supabase.storage.from("pdfs").getPublicUrl(data.path);
+    setPdfUrlMn(publicUrl);
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
 
     startTransition(async () => {
-      const supabase = createClient();
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const db = createClient() as any;
       const payload = {
-        title,
+        title:      titleEn,
+        title_mn:   titleMn   || null,
         slug,
-        excerpt: excerpt || null,
-        body: pdfUrl ? null : body,
+        excerpt:    excerptEn || null,
+        excerpt_mn: excerptMn || null,
+        body:       articleType === "pdf" ? null : bodyEn,
+        body_mn:    articleType === "pdf" ? null : (bodyMn || null),
         cover_image_url: coverUrl || null,
-        pdf_url: pdfUrl || null,
+        pdf_url:    articleType === "pdf" ? (pdfUrl || null) : null,
+        pdf_url_mn: articleType === "pdf" ? (pdfUrlMn || null) : null,
         category_id: categoryId || null,
         status,
         is_breaking: isBreaking,
@@ -116,8 +192,6 @@ export default function ArticleForm({ article, categories, tags, selectedTagIds 
       };
 
       let articleId = article?.id;
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const db = supabase as any;
 
       if (isEditing && articleId) {
         const { error } = await db.from("articles").update(payload).eq("id", articleId);
@@ -148,19 +222,32 @@ export default function ArticleForm({ article, categories, tags, selectedTagIds 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       {error && (
-        <div className="border border-red-300 bg-red-50 px-4 py-3 rounded-lg text-sm text-red-700">
-          {error}
-        </div>
+        <div className="border border-red-300 bg-red-50 px-4 py-3 rounded-lg text-sm text-red-700">{error}</div>
       )}
 
-      {/* Title + Slug + Category */}
-      <div className="grid grid-cols-2 gap-4">
-        <div className="col-span-2">
-          <label className={labelClass}>Title *</label>
-          <input type="text" required value={title}
-            onChange={(e) => handleTitleChange(e.target.value)}
-            className={fieldClass} placeholder="Article headline" />
+      {/* Article type */}
+      <div>
+        <label className={labelClass}>Article Type</label>
+        <div className="flex gap-3 mt-1">
+          {(["normal", "pdf"] as const).map((t) => (
+            <button key={t} type="button" onClick={() => switchType(t)}
+              className={`flex items-center gap-2 px-5 py-3 rounded-xl border text-sm font-medium transition-colors ${
+                articleType === t
+                  ? "border-[--color-accent] bg-[--color-accent-light] text-[--color-accent]"
+                  : "border-[--color-rule] text-[--color-text-muted] hover:border-[--color-accent] hover:text-[--color-accent]"
+              }`}>
+              {t === "normal" ? (
+                <><svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6M5 8h14M5 4h14a1 1 0 011 1v14a1 1 0 01-1 1H5a1 1 0 01-1-1V5a1 1 0 011-1z" /></svg>Normal Article</>
+              ) : (
+                <><svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" /></svg>PDF Book</>
+              )}
+            </button>
+          ))}
         </div>
+      </div>
+
+      {/* Meta: slug + category */}
+      <div className="grid grid-cols-2 gap-4">
         <div className="col-span-2 md:col-span-1">
           <label className={labelClass}>Slug *</label>
           <input type="text" required value={slug}
@@ -174,14 +261,6 @@ export default function ArticleForm({ article, categories, tags, selectedTagIds 
             {categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
           </select>
         </div>
-      </div>
-
-      {/* Excerpt */}
-      <div>
-        <label className={labelClass}>Excerpt</label>
-        <textarea value={excerpt} onChange={(e) => setExcerpt(e.target.value)}
-          rows={3} className={fieldClass}
-          placeholder="Short summary shown on article cards" />
       </div>
 
       {/* Cover image */}
@@ -201,51 +280,84 @@ export default function ArticleForm({ article, categories, tags, selectedTagIds 
         )}
       </div>
 
-      {/* ── PDF upload ─────────────────────────────────────────── */}
-      <div>
-        <label className={labelClass}>PDF Content</label>
-        <p className="text-xs text-[--color-text-muted] mb-3">
-          Upload a PDF — readers will flip through it as a book. Replaces the rich text body.
-        </p>
-
-        {pdfUrl ? (
-          <div className="flex items-center gap-3 border border-[--color-accent] bg-[--color-accent-light] rounded-lg px-4 py-3">
-            <svg className="w-5 h-5 text-[--color-accent] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-            </svg>
-            <span className="text-sm font-medium text-[--color-accent] flex-1 truncate">{pdfFileName}</span>
-            <button type="button" onClick={() => { setPdfUrl(""); setPdfFileName(null); }}
-              className="text-xs text-[--color-accent] hover:underline shrink-0">
-              Remove
+      {/* ── Language-specific content ───────────────────────────── */}
+      <div className="border border-[--color-rule] rounded-xl overflow-hidden">
+        {/* Tab bar */}
+        <div className="flex border-b border-[--color-rule] bg-gray-50">
+          {([["en", "🇬🇧 English"], ["mn", "🇲🇳 Монгол"]] as const).map(([lang, label]) => (
+            <button key={lang} type="button" onClick={() => setLangTab(lang)}
+              className={`flex-1 py-3 text-sm font-semibold transition-colors ${
+                langTab === lang
+                  ? "bg-white text-[--color-accent] border-b-2 border-[--color-accent]"
+                  : "text-[--color-text-muted] hover:text-[--color-text]"
+              }`}>
+              {label}
             </button>
-          </div>
-        ) : (
-          <label className="flex flex-col items-center justify-center gap-3 border-2 border-dashed border-[--color-rule] rounded-xl p-8 cursor-pointer hover:border-[--color-accent] hover:bg-[--color-accent-light] transition-colors">
-            {pdfUploading ? (
-              <span className="text-sm text-[--color-text-muted]">Uploading PDF…</span>
-            ) : (
-              <>
-                <svg className="w-8 h-8 text-[--color-text-muted]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
-                    d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
-                </svg>
-                <span className="text-sm text-[--color-text-muted]">Click to upload a PDF (max 50 MB)</span>
-              </>
-            )}
-            <input type="file" accept="application/pdf" className="hidden"
-              onChange={(e) => { const f = e.target.files?.[0]; if (f) uploadPDF(f); }} />
-          </label>
-        )}
-      </div>
-
-      {/* Rich text body — only shown when no PDF */}
-      {!pdfUrl && (
-        <div>
-          <label className={labelClass}>Body (rich text)</label>
-          <AdminEditor content={body as { type: string; html?: string }} onChange={setBody} />
+          ))}
         </div>
-      )}
+
+        <div className="p-5 space-y-4">
+          {langTab === "en" ? (
+            <>
+              <div>
+                <label className={labelClass}>Title (English) *</label>
+                <input type="text" required value={titleEn}
+                  onChange={(e) => handleTitleEnChange(e.target.value)}
+                  className={fieldClass} placeholder="Article headline in English" />
+              </div>
+              <div>
+                <label className={labelClass}>Excerpt (English)</label>
+                <textarea value={excerptEn} onChange={(e) => setExcerptEn(e.target.value)}
+                  rows={3} className={fieldClass} placeholder="Short summary shown on article cards" />
+              </div>
+              {articleType === "normal" && (
+                <div>
+                  <label className={labelClass}>Body (English)</label>
+                  <AdminEditor content={bodyEn as { type: string; html?: string }} onChange={setBodyEn} />
+                </div>
+              )}
+              {articleType === "pdf" && (
+                <div>
+                  <label className={labelClass}>PDF File — English *</label>
+                  <PdfUploadField
+                    url={pdfUrl} fileName={pdfFileName} uploading={pdfUploading}
+                    onUpload={uploadPDF} onRemove={() => { setPdfUrl(""); setPdfFileName(null); }}
+                  />
+                </div>
+              )}
+            </>
+          ) : (
+            <>
+              <div>
+                <label className={labelClass}>Гарчиг (Монгол)</label>
+                <input type="text" value={titleMn}
+                  onChange={(e) => setTitleMn(e.target.value)}
+                  className={fieldClass} placeholder="Мэдээний гарчиг монгол хэлээр" />
+              </div>
+              <div>
+                <label className={labelClass}>Товч агуулга (Монгол)</label>
+                <textarea value={excerptMn} onChange={(e) => setExcerptMn(e.target.value)}
+                  rows={3} className={fieldClass} placeholder="Мэдээний товч тайлбар монгол хэлээр" />
+              </div>
+              {articleType === "normal" && (
+                <div>
+                  <label className={labelClass}>Агуулга (Монгол)</label>
+                  <AdminEditor content={bodyMn as { type: string; html?: string }} onChange={setBodyMn} />
+                </div>
+              )}
+              {articleType === "pdf" && (
+                <div>
+                  <label className={labelClass}>PDF файл — Монгол</label>
+                  <PdfUploadField
+                    url={pdfUrlMn} fileName={pdfFileNameMn} uploading={pdfUploadingMn}
+                    onUpload={uploadPDFMn} onRemove={() => { setPdfUrlMn(""); setPdfFileNameMn(null); }}
+                  />
+                </div>
+              )}
+            </>
+          )}
+        </div>
+      </div>
 
       {/* Tags */}
       {tags.length > 0 && (
@@ -256,11 +368,11 @@ export default function ArticleForm({ article, categories, tags, selectedTagIds 
               const selected = pickedTagIds.includes(tag.id);
               return (
                 <button key={tag.id} type="button" onClick={() => toggleTag(tag.id)}
-                  className={`text-xs font-semibold px-3 py-1.5 rounded-full border transition-colors cursor-pointer ${
-                    selected
-                      ? "bg-[--color-accent] text-white border-[--color-accent]"
-                      : "bg-white text-black border-black hover:bg-black hover:text-white"
-                  }`}>
+                  className="text-xs font-semibold px-3 py-1.5 rounded-full border transition-colors cursor-pointer"
+                  style={selected
+                    ? { backgroundColor: "#5B3ADB", color: "#fff", borderColor: "#5B3ADB" }
+                    : { backgroundColor: "#fff", color: "#000", borderColor: "#000" }
+                  }>
                   {selected ? "✓ " : ""}{tag.name}
                 </button>
               );
@@ -280,13 +392,11 @@ export default function ArticleForm({ article, categories, tags, selectedTagIds 
           </select>
         </div>
         <label className="flex items-center gap-2 pb-2 cursor-pointer">
-          <input type="checkbox" id="is_featured" checked={isFeatured}
-            onChange={(e) => setIsFeatured(e.target.checked)} className="w-4 h-4 accent-[--color-accent]" />
+          <input type="checkbox" checked={isFeatured} onChange={(e) => setIsFeatured(e.target.checked)} className="w-4 h-4 accent-[--color-accent]" />
           <span className="text-sm font-medium text-[--color-text]">Featured</span>
         </label>
         <label className="flex items-center gap-2 pb-2 cursor-pointer">
-          <input type="checkbox" id="is_breaking" checked={isBreaking}
-            onChange={(e) => setIsBreaking(e.target.checked)} className="w-4 h-4 accent-[--color-accent]" />
+          <input type="checkbox" checked={isBreaking} onChange={(e) => setIsBreaking(e.target.checked)} className="w-4 h-4 accent-[--color-accent]" />
           <span className="text-sm font-medium text-[--color-text]">Breaking</span>
         </label>
       </div>

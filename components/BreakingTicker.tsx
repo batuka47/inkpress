@@ -4,10 +4,12 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import type { Database } from "@/types/database";
+import { useLanguage } from "./LanguageProvider";
 
 type BreakingItem = Database["public"]["Tables"]["breaking_news"]["Row"];
 
 export default function BreakingTicker({ items: initial }: { items: BreakingItem[] }) {
+  const { locale, t } = useLanguage();
   const [items, setItems] = useState(initial);
 
   useEffect(() => {
@@ -37,7 +39,7 @@ export default function BreakingTicker({ items: initial }: { items: BreakingItem
     >
       <div className="flex items-center">
         <span className="shrink-0 bg-[--color-accent] font-(family-name:--font-dm-mono) text-xs uppercase tracking-widest px-4 py-2 z-10 font-medium">
-          Breaking
+          {t("breaking")}
         </span>
         <div className="overflow-hidden flex-1">
           <div className="ticker-track py-2">
@@ -49,11 +51,11 @@ export default function BreakingTicker({ items: initial }: { items: BreakingItem
                     href={`/article/${item.link_article_id}`}
                     className="font-(family-name:--font-dm-mono) text-xs hover:text-[--color-accent] transition-colors whitespace-nowrap"
                   >
-                    {item.text}
+                    {locale === "mn" && item.text_mn ? item.text_mn : item.text}
                   </Link>
                 ) : (
                   <span className="font-(family-name:--font-dm-mono) text-xs whitespace-nowrap">
-                    {item.text}
+                    {locale === "mn" && item.text_mn ? item.text_mn : item.text}
                   </span>
                 )}
               </span>

@@ -1,10 +1,7 @@
 import { notFound } from "next/navigation";
 import { getArticleBySlug } from "@/lib/supabase/queries";
-import BookReaderClient from "@/components/BookReaderClient";
-import PDFBookReaderClient from "@/components/PDFBookReaderClient";
-import ArticleBody from "@/components/ArticleBody";
-import AuthorCard from "@/components/AuthorCard";
-import CategoryBadge from "@/components/CategoryBadge";
+import PDFArticleClient from "@/components/PDFArticleClient";
+import ArticleContentClient from "@/components/ArticleContentClient";
 import type { Metadata } from "next";
 
 export const revalidate = 60;
@@ -32,56 +29,33 @@ export default async function ArticlePage({ params }: Props) {
 
   if (!article) notFound();
 
-  // PDF article — flip through it as a book
-  if ((article as typeof article & { pdf_url?: string | null }).pdf_url) {
+  // PDF article — locale-aware: pick pdf_url_mn if available, else pdf_url
+  const a = article as typeof article & { pdf_url?: string | null; pdf_url_mn?: string | null };
+  if (a.pdf_url || a.pdf_url_mn) {
     return (
-      <PDFBookReaderClient
-        pdfUrl={(article as typeof article & { pdf_url: string }).pdf_url}
+      <PDFArticleClient
+        pdfUrl={a.pdf_url ?? null}
+        pdfUrlMn={a.pdf_url_mn ?? null}
         title={article.title}
+        titleMn={(article as typeof article & { title_mn?: string | null }).title_mn ?? null}
       />
     );
   }
 
-  // Rich-text article — TipTap book reader
-  if (article.body) {
-    return (
-      <BookReaderClient
-        title={article.title}
-        excerpt={article.excerpt ?? null}
-        coverImageUrl={article.cover_image_url ?? null}
-        body={article.body}
-        authorName={article.authors?.display_name}
-        publishedAt={article.published_at}
-        category={article.categories?.name}
-      />
-    );
-  }
-
-  // Fallback — plain article layout
-  const publishedAt = article.published_at
-    ? new Date(article.published_at).toLocaleDateString("en-US", {
-        weekday: "long", year: "numeric", month: "long", day: "numeric",
-      })
-    : null;
-
+  // Normal article — locale-aware client component picks EN or MN content
   return (
-    <article className="max-w-180 mx-auto px-6 py-12">
-      <div className="flex items-center gap-4 mb-6 text-xs text-[--color-text-muted]">
-        {article.categories && <CategoryBadge name={article.categories.name} />}
-        {article.reading_time_minutes && <span>{article.reading_time_minutes} min read</span>}
-      </div>
-      <h1 className="font-bold leading-tight mb-6" style={{ fontSize: "clamp(2rem, 5vw, 3rem)", letterSpacing: "-0.02em" }}>
-        {article.title}
-      </h1>
-      {article.excerpt && (
-        <p className="text-lg text-[--color-text-muted] italic mb-8 leading-relaxed">{article.excerpt}</p>
-      )}
-      <hr className="newspaper-rule mb-8" />
-      <div className="flex items-center justify-between mb-10">
-        {article.authors && <AuthorCard author={article.authors} />}
-        {publishedAt && <time className="text-xs text-[--color-text-muted]">{publishedAt}</time>}
-      </div>
-      <ArticleBody body={article.body} />
-    </article>
+    <ArticleContentClient
+      title={article.title}
+      title_mn={(article as typeof article & { title_mn?: string | null }).title_mn ?? null}
+      excerpt={article.excerpt ?? null}
+      excerpt_mn={(article as typeof article & { excerpt_mn?: string | null }).excerpt_mn ?? null}
+      body={article.body ?? null}
+      body_mn={(article as typeof article & { body_mn?: unknown }).body_mn as typeof article.body ?? null}
+      cover_image_url={article.cover_image_url ?? null}
+      published_at={article.published_at ?? null}
+      reading_time_minutes={article.reading_time_minutes ?? null}
+      authors={article.authors ?? null}
+      categories={article.categories ?? null}
+    />
   );
 }

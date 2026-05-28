@@ -2,8 +2,10 @@
 
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { useLanguage } from "@/components/LanguageProvider";
 
 export default function SubscribePage() {
+  const { t } = useLanguage();
   const [email, setEmail] = useState("");
   const [name,  setName]  = useState("");
   const [state, setState] = useState<"idle" | "loading" | "success" | "error">("idle");
@@ -19,10 +21,10 @@ export default function SubscribePage() {
 
     if (error) {
       setState("error");
-      setMsg(error.code === "23505" ? "You're already subscribed!" : error.message);
+      setMsg(error.code === "23505" ? t("alreadySubscribed") : error.message);
     } else {
       setState("success");
-      setMsg("You're subscribed! You'll receive our latest articles by email.");
+      setMsg(t("subscribePage_success"));
     }
   }
 
@@ -33,10 +35,10 @@ export default function SubscribePage() {
           <div className="text-center mb-8">
             <span className="text-3xl">✉️</span>
             <h1 className="text-2xl font-bold mt-3 mb-2" style={{ letterSpacing: "-0.02em" }}>
-              Subscribe to InkPress
+              {t("subscribePage_title")}
             </h1>
             <p className="text-sm text-[--color-text-muted]">
-              Get the latest articles delivered to your inbox.
+              {t("subscribePage_subtitle")}
             </p>
           </div>
 
@@ -48,18 +50,18 @@ export default function SubscribePage() {
             <form onSubmit={submit} className="space-y-4">
               <div>
                 <label className="block text-xs font-semibold uppercase tracking-widest text-[--color-text-muted] mb-1">
-                  Name (optional)
+                  {t("subscribePage_name")}
                 </label>
                 <input type="text" value={name} onChange={(e) => setName(e.target.value)}
-                  placeholder="Your name"
+                  placeholder={t("subscribePage_namePh")}
                   className="w-full border border-[--color-rule] rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-[--color-accent] transition-colors" />
               </div>
               <div>
                 <label className="block text-xs font-semibold uppercase tracking-widest text-[--color-text-muted] mb-1">
-                  Email *
+                  {t("subscribePage_email")}
                 </label>
                 <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)}
-                  placeholder="you@example.com"
+                  placeholder={t("subscribePage_emailPh")}
                   className="w-full border border-[--color-rule] rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-[--color-accent] transition-colors" />
               </div>
 
@@ -69,7 +71,7 @@ export default function SubscribePage() {
 
               <button type="submit" disabled={state === "loading"}
                 className="w-full border border-black text-black text-sm font-medium py-2.5 rounded-lg hover:bg-black hover:text-white transition-colors disabled:opacity-50 mt-2">
-                {state === "loading" ? "Subscribing…" : "Subscribe"}
+                {state === "loading" ? t("subscribePage_btnBusy") : t("subscribePage_btn")}
               </button>
             </form>
           )}
