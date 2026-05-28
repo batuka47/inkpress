@@ -6,7 +6,7 @@ import AuthorCard from "./AuthorCard";
 import CategoryBadge from "./CategoryBadge";
 import type { Json } from "@/types/database";
 
-interface Author { display_name: string; bio?: string | null; avatar_url?: string | null; role?: string; }
+interface Author { id: string; display_name: string; bio: string | null; avatar_url: string | null; role: "editor" | "journalist" | "contributor"; }
 interface Category { name: string; name_mn?: string | null; }
 
 interface Props {
