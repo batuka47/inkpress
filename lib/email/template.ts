@@ -1,4 +1,4 @@
-export interface EmailTemplateData {
+﻿export interface EmailTemplateData {
   siteUrl: string;
   articleTitle: string;
   articleSlug: string;
@@ -34,7 +34,7 @@ export function buildEmailHtml(data: EmailTemplateData): string {
       <!-- Header -->
       <tr><td style="background:#5B3ADB;padding:24px 32px;text-align:center;">
         <h1 style="margin:0;font-family:Georgia,serif;font-size:28px;font-weight:900;color:#ffffff;letter-spacing:-0.02em;">
-          InkPress
+          AmjiltPressAgency
         </h1>
         <p style="margin:4px 0 0;font-family:Arial,sans-serif;font-size:11px;color:rgba(255,255,255,0.7);letter-spacing:0.1em;text-transform:uppercase;">
           News as it should be read
@@ -94,7 +94,7 @@ export function buildEmailHtml(data: EmailTemplateData): string {
       <!-- Footer -->
       <tr><td style="padding:24px 40px 32px;text-align:center;">
         <p style="margin:0 0 8px;font-family:Arial,sans-serif;font-size:12px;color:#9ca3af;">
-          You're receiving this because you subscribed to InkPress.
+          You're receiving this because you subscribed to AmjiltPressAgency.
         </p>
         <p style="margin:0;font-family:Arial,sans-serif;font-size:12px;">
           <a href="${articleUrl}" style="color:#5B3ADB;text-decoration:none;">View online</a>

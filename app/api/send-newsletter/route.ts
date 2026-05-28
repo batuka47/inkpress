@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+﻿import { NextRequest, NextResponse } from "next/server";
 import nodemailer from "nodemailer";
 import { createClient } from "@/lib/supabase/server";
 import { buildEmailHtml } from "@/lib/email/template";
@@ -49,7 +49,7 @@ export async function POST(req: NextRequest) {
     });
 
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
-    const subject = customSubject || `${categoryName ? `[${categoryName}] ` : ""}${articleTitle} — InkPress`;
+    const subject = customSubject || `${categoryName ? `[${categoryName}] ` : ""}${articleTitle} — AmjiltPressAgency`;
 
     let sent = 0;
     const errors: string[] = [];
@@ -70,7 +70,7 @@ export async function POST(req: NextRequest) {
         });
 
         await transporter.sendMail({
-          from: `"InkPress" <${process.env.GMAIL_USER}>`,
+          from: `"AmjiltPressAgency" <${process.env.GMAIL_USER}>`,
           to: sub.email,
           subject,
           html,

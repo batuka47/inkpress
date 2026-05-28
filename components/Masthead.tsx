@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Link from "next/link";
 import { useState } from "react";
@@ -35,9 +35,12 @@ export default function Masthead({ extraCategories = [] }: Props) {
   return (
     <header className="sticky top-0 z-50 bg-white border-b border-[--color-rule] shadow-sm">
       <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between gap-8">
-        <Link href="/" className="font-bold text-xl text-[--color-accent] tracking-tight shrink-0"
-          style={{ letterSpacing: "-0.03em" }}>
-          AmjiltPress
+        <Link href="/" className="flex items-center gap-2 shrink-0">
+          <img src="/logo.png" alt="AmjiltPressAgency logo" className="h-12 w-auto"
+            style={{ filter: "brightness(0) saturate(100%) invert(24%) sepia(89%) saturate(1200%) hue-rotate(234deg) brightness(85%)" }} />
+          <span className="font-bold text-xl text-[--color-accent] tracking-tight" style={{ letterSpacing: "-0.03em" }}>
+            AmjiltPressAgency
+          </span>
         </Link>
 
         {/* Nav — desktop */}

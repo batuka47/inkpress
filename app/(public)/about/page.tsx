@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Link from "next/link";
 import { useLanguage } from "@/components/LanguageProvider";
@@ -131,9 +131,9 @@ export default function AboutPage() {
                   ? "Мэдээний дохио, засвар, хэвлэлийн асуулга, редакцийн санал хүсэлт."
                   : "Story tips, corrections, press inquiries, and editorial feedback."}
               </p>
-              <a href="mailto:editorial@amjiltpress.com"
+              <a href="mailto:editorial@amjiltpressagency.com"
                 className="text-sm font-medium text-[--color-accent] hover:underline">
-                editorial@amjiltpress.com
+                editorial@amjiltpressagency.com
               </a>
             </div>
             <div className="border border-[--color-rule] rounded-2xl p-6">

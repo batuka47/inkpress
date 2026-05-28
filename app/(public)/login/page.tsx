@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -35,7 +35,7 @@ export default function LoginPage() {
       <div className="w-full max-w-sm">
         <div className="text-center mb-8">
           <span className="font-bold text-2xl text-[--color-accent]" style={{ letterSpacing: "-0.03em" }}>
-            InkPress
+            AmjiltPressAgency
           </span>
           <p className="text-sm text-[--color-text-muted] mt-2">Sign in to the admin panel</p>
         </div>

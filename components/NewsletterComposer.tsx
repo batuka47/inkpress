@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import { buildEmailHtml } from "@/lib/email/template";
@@ -21,7 +21,7 @@ interface Props {
 export default function NewsletterComposer({ article, subscriberCount }: Props) {
   const [open, setOpen]               = useState(false);
   const [subject, setSubject]         = useState(
-    `${article.categories?.name ? `[${article.categories.name}] ` : ""}${article.title} — InkPress`
+    `${article.categories?.name ? `[${article.categories.name}] ` : ""}${article.title} — AmjiltPressAgency`
   );
   const [customIntro, setCustomIntro] = useState("");
   const [previewMode, setPreviewMode] = useState<"edit" | "preview">("edit");

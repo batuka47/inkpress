@@ -1,4 +1,4 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 import SignOutButton from "@/components/SignOutButton";
 
 const NAV = [
@@ -17,7 +17,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <div className="max-w-7xl mx-auto px-6 h-14 flex items-center justify-between gap-6">
           <div className="flex items-center gap-4">
             <Link href="/" className="font-bold text-lg text-black" style={{ letterSpacing: "-0.03em" }}>
-              Ink<span className="text-[--color-accent]">Press</span>
+              AmjiltPressAgency
             </Link>
             <span className="text-[10px] font-semibold uppercase tracking-widest bg-[--color-accent] text-white px-2 py-0.5 rounded">
               Admin

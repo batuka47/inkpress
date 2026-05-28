@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import { Inter, DM_Mono } from "next/font/google";
 import { LanguageProvider } from "@/components/LanguageProvider";
 import "./globals.css";
@@ -18,13 +18,18 @@ const dmMono = DM_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "AmjiltPress",
-    template: "%s — AmjiltPress",
+    default: "AmjiltPressAgency",
+    template: "%s — AmjiltPressAgency",
   },
   description: "News as it should be read — beautifully.",
+  icons: {
+    icon: "/logo.png",
+    apple: "/logo.png",
+  },
   openGraph: {
-    siteName: "AmjiltPress",
+    siteName: "AmjiltPressAgency",
     type: "website",
+    images: [{ url: "/logo.png", width: 1200, height: 630, alt: "AmjiltPressAgency" }],
   },
 };
 

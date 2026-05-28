@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+﻿import { NextRequest, NextResponse } from "next/server";
 import nodemailer from "nodemailer";
 import { createClient } from "@/lib/supabase/server";
 
@@ -33,12 +33,12 @@ export async function POST(req: NextRequest) {
     await transporter.verify();
 
     await transporter.sendMail({
-      from: `"InkPress" <${process.env.GMAIL_USER}>`,
+      from: `"AmjiltPressAgency" <${process.env.GMAIL_USER}>`,
       to: to || user.email,
-      subject: "✓ InkPress — Email test successful",
+      subject: "✓ AmjiltPressAgency — Email test successful",
       html: `
         <div style="font-family:Arial,sans-serif;max-width:500px;margin:0 auto;padding:32px;">
-          <h2 style="color:#5B3ADB;">InkPress Email Test</h2>
+          <h2 style="color:#5B3ADB;">AmjiltPressAgency Email Test</h2>
           <p>Your Gmail SMTP is configured correctly. Newsletter sending will work.</p>
           <p style="color:#6b7280;font-size:12px;">Sent from: ${process.env.GMAIL_USER}</p>
         </div>

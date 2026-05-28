@@ -50,7 +50,7 @@ export default function ArticleCard({ article, size = "standard", layout = "card
             <Link href={href} className="headline-link hover:text-[--color-accent]">{title}</Link>
           </h2>
           {publishedAt && (
-            <time className="text-xs text-[--color-text-muted] mt-1 block">{publishedAt}</time>
+            <time className="text-xs text-[--color-text-muted] mt-1 block" suppressHydrationWarning>{publishedAt}</time>
           )}
         </div>
       </article>
@@ -96,7 +96,7 @@ export default function ArticleCard({ article, size = "standard", layout = "card
 
         <div className="flex items-center gap-3 text-xs text-[--color-text-muted] mt-auto pt-3 border-t border-[--color-rule]">
           {article.authors && <span className="font-medium">{article.authors.display_name}</span>}
-          {publishedAt && <time dateTime={article.published_at ?? ""}>{publishedAt}</time>}
+          {publishedAt && <time dateTime={article.published_at ?? ""} suppressHydrationWarning>{publishedAt}</time>}
           {article.reading_time_minutes && (
             <span>{article.reading_time_minutes} {locale === "mn" ? "мин" : "min read"}</span>
           )}

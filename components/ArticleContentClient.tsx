@@ -70,7 +70,7 @@ export default function ArticleContentClient({
 
         <div className="flex items-center justify-between border-y border-[--color-rule] py-4 mb-10">
           {authors && <AuthorCard author={authors} />}
-          {publishedAt && <time className="text-xs text-[--color-text-muted]">{publishedAt}</time>}
+          {publishedAt && <time className="text-xs text-[--color-text-muted]" suppressHydrationWarning>{publishedAt}</time>}
         </div>
 
         <ArticleBody body={displayBody} />

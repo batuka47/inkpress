@@ -1,4 +1,4 @@
-import { getPublishedArticles, getFeaturedArticle, getBreakingNews, getCategories } from "@/lib/supabase/queries";
+﻿import { getPublishedArticles, getFeaturedArticle, getBreakingNews, getCategories } from "@/lib/supabase/queries";
 import BreakingTicker from "@/components/BreakingTicker";
 import HeroGrid from "@/components/HeroGrid";
 import SectionDivider from "@/components/SectionDivider";
@@ -7,7 +7,7 @@ import NewsletterSignup from "@/components/NewsletterSignup";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "InkPress",
+  title: "AmjiltPressAgency",
   description: "News as it should be read — beautifully.",
 };
 

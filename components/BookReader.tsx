@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useRef, useState, useCallback } from "react";
 import HTMLFlipBook from "react-pageflip";
@@ -117,7 +117,7 @@ function CoverPage({ title, excerpt, coverImageUrl, category }: {
           <p className="text-gray-300 text-[13px] leading-relaxed line-clamp-3">{excerpt}</p>
         )}
         <div className="mt-8 border-t border-white/20 pt-4">
-          <span className="text-[11px] font-bold tracking-[0.2em] text-[#5B3ADB] uppercase">InkPress</span>
+          <span className="text-[11px] font-bold tracking-[0.2em] text-[#5B3ADB] uppercase">AmjiltPressAgency</span>
         </div>
       </div>
     </div>
@@ -131,7 +131,7 @@ function ContentPage({ blocks, pageNum, total }: {
     <div className={pageStyle}>
       <div className={pageInner}>
         <div className="border-b border-[#d0ccc0] pb-1 mb-4 flex justify-between items-center">
-          <span className="text-[10px] uppercase tracking-widest text-[#999] font-medium">InkPress</span>
+          <span className="text-[10px] uppercase tracking-widest text-[#999] font-medium">AmjiltPressAgency</span>
           <div className="h-px flex-1 mx-3 bg-[#d0ccc0]" />
         </div>
         <div className="columns-1">
@@ -150,7 +150,7 @@ function BlankPage() {
   return (
     <div className={pageStyle}>
       <div className="flex-1 flex items-center justify-center">
-        <span className="text-[10px] uppercase tracking-widest text-[#ccc]">InkPress</span>
+        <span className="text-[10px] uppercase tracking-widest text-[#ccc]">AmjiltPressAgency</span>
       </div>
     </div>
   );
@@ -194,7 +194,7 @@ export default function BookReader({ title, excerpt, coverImageUrl, body, author
       <div className={`${pageStyle} bg-[#111827]`}>
         <div className="flex flex-col h-full items-center justify-center gap-3">
           <span className="text-xl font-bold text-white" style={{ letterSpacing: "-0.03em" }}>
-            Ink<span className="text-violet-muted">Press</span>
+            AmjiltPressAgency
           </span>
           <p className="text-xs text-gray-500">News as it should be read.</p>
         </div>
