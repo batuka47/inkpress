@@ -9,11 +9,11 @@ export default function Footer({ categories = [] }: { categories?: Category[] })
   const { locale, t } = useLanguage();
   const year = new Date().getFullYear();
 
-  const defaultLinks = [
-    { name: t("navPolitics"), slug: "politics" },
-    { name: t("navTech"),     slug: "tech" },
-    { name: t("navCulture"),  slug: "culture" },
-    { name: t("navWorld"),    slug: "world" },
+  const defaultLinks: Category[] = [
+    { name: t("navPolitics"), name_mn: null, slug: "politics" },
+    { name: t("navTech"),     name_mn: null, slug: "tech" },
+    { name: t("navCulture"),  name_mn: null, slug: "culture" },
+    { name: t("navWorld"),    name_mn: null, slug: "world" },
   ];
 
   const links = categories.length > 0 ? categories : defaultLinks;
