@@ -95,6 +95,26 @@ export async function getCategories(): QueryResult<CategoryRow[]> {
   });
 }
 
+export async function getAuthorById(id: string): QueryResult<AuthorRow> {
+  return query<AuthorRow>(async () => {
+    const supabase = await createClient();
+    return supabase.from("authors").select("*").eq("id", id).single();
+  });
+}
+
+export async function getArticlesByAuthor(authorId: string, limit = 20): QueryResult<ArticleWithRelations[]> {
+  return query<ArticleWithRelations[]>(async () => {
+    const supabase = await createClient();
+    return supabase
+      .from("articles")
+      .select("*, categories(*), authors(*)")
+      .eq("status", "published")
+      .eq("author_id", authorId)
+      .order("published_at", { ascending: false })
+      .limit(limit);
+  });
+}
+
 export async function searchArticles(q: string, limit = 20): QueryResult<ArticleWithRelations[]> {
   return query<ArticleWithRelations[]>(async () => {
     const supabase = await createClient();

@@ -1,15 +1,22 @@
-﻿"use client";
+"use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
 export default function LoginPage() {
-  const router = useRouter();
+  const router       = useRouter();
+  const searchParams = useSearchParams();
   const [email,    setEmail]    = useState("");
   const [password, setPassword] = useState("");
   const [loading,  setLoading]  = useState(false);
   const [error,    setError]    = useState<string | null>(null);
+
+  useEffect(() => {
+    if (searchParams.get("error") === "auth_failed") {
+      setError("Authentication failed. Please try again.");
+    }
+  }, [searchParams]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -17,16 +24,31 @@ export default function LoginPage() {
     setLoading(true);
 
     const supabase = createClient();
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    const { data: { user }, error } = await supabase.auth.signInWithPassword({ email, password });
 
     setLoading(false);
 
-    if (error) {
-      setError(error.message);
+    if (error || !user) {
+      setError(error?.message ?? "Login failed");
       return;
     }
 
-    router.push("/admin");
+    // Look up author role to decide where to redirect
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data: author } = await (supabase as any)
+      .from("authors")
+      .select("id, role")
+      .eq("id", user.id)
+      .single();
+
+    if (author?.role === "editor") {
+      router.push("/admin");
+    } else if (author) {
+      router.push(`/author/${author.id}/dashboard`);
+    } else {
+      // Not an author — default to admin for superusers
+      router.push("/admin");
+    }
     router.refresh();
   }
 
@@ -34,6 +56,8 @@ export default function LoginPage() {
     <div className="min-h-[80vh] flex items-center justify-center px-6 bg-[--color-surface]">
       <div className="w-full max-w-sm">
         <div className="text-center mb-8">
+          <img src="/logo.png" alt="AmjiltPressAgency" className="h-12 w-auto mx-auto mb-4"
+            style={{ filter: "brightness(0) saturate(100%) invert(24%) sepia(89%) saturate(1200%) hue-rotate(234deg) brightness(85%)" }} />
           <span className="font-bold text-2xl text-[--color-accent]" style={{ letterSpacing: "-0.03em" }}>
             AmjiltPressAgency
           </span>

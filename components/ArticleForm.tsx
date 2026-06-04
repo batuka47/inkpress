@@ -34,6 +34,7 @@ interface Props {
   tags: Tag[];
   selectedTagIds?: string[];
   authorId: string;
+  redirectTo?: string;
 }
 
 function slugify(text: string) {
@@ -72,7 +73,7 @@ function PdfUploadField({ url, fileName, uploading, onUpload, onRemove }: {
   );
 }
 
-export default function ArticleForm({ article, categories, tags, selectedTagIds = [], authorId }: Props) {
+export default function ArticleForm({ article, categories, tags, selectedTagIds = [], authorId, redirectTo = "/admin/articles" }: Props) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const isEditing = !!article?.id;
@@ -211,7 +212,7 @@ export default function ArticleForm({ article, categories, tags, selectedTagIds 
         }
       }
 
-      router.push("/admin/articles");
+      router.push(redirectTo);
       router.refresh();
     });
   }
@@ -407,7 +408,7 @@ export default function ArticleForm({ article, categories, tags, selectedTagIds 
           className="border border-black text-black text-sm font-medium px-8 py-2.5 rounded-lg hover:bg-black hover:text-white transition-colors disabled:opacity-40">
           {isPending ? "Saving…" : isEditing ? "Save Changes" : "Create Article"}
         </button>
-        <button type="button" onClick={() => router.push("/admin/articles")}
+        <button type="button" onClick={() => router.push(redirectTo)}
           className="border border-[--color-rule] text-sm font-medium px-6 py-2.5 rounded-lg text-[--color-text-muted] hover:border-[--color-accent] hover:text-[--color-accent] transition-colors">
           Cancel
         </button>

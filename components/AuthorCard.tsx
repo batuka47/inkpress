@@ -1,4 +1,5 @@
 ﻿import Image from "next/image";
+import Link from "next/link";
 import type { Database } from "@/types/database";
 
 type Author = Database["public"]["Tables"]["authors"]["Row"];
@@ -23,14 +24,15 @@ export default function AuthorCard({ author, showBio = false }: Props) {
         </div>
       )}
       <div>
-        <p className="font-(family-name:--font-source-serif) font-semibold text-sm text-[--color-text] leading-tight">
+        <Link href={`/author/${author.id}`}
+          className="font-semibold text-sm text-[--color-text] leading-tight hover:text-[--color-accent] transition-colors">
           {author.display_name}
-        </p>
+        </Link>
         <p className="font-(family-name:--font-dm-mono) text-xs text-[--color-text-muted] capitalize">
           {author.role}
         </p>
         {showBio && author.bio && (
-          <p className="font-(family-name:--font-source-serif) text-sm text-[--color-text-muted] mt-1 leading-relaxed">
+          <p className="text-sm text-[--color-text-muted] mt-1 leading-relaxed">
             {author.bio}
           </p>
         )}
