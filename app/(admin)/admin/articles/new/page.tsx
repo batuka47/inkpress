@@ -7,9 +7,12 @@ export default async function NewArticlePage() {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
-  const [{ data: categories }, { data: tags }] = await Promise.all([
-    supabase.from("categories").select("id, name").order("display_order"),
-    supabase.from("tags").select("id, name").order("name"),
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const db = supabase as any;
+  const [{ data: categories }, { data: tags }, { data: authors }] = await Promise.all([
+    db.from("categories").select("id, name").order("display_order"),
+    db.from("tags").select("id, name").order("name"),
+    db.from("authors").select("id, display_name, role").order("display_name"),
   ]);
 
   return (
@@ -23,6 +26,7 @@ export default async function NewArticlePage() {
       <ArticleForm
         categories={categories ?? []}
         tags={tags ?? []}
+        authors={authors ?? []}
         authorId={user.id}
       />
     </div>

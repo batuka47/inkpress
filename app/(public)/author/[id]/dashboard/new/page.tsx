@@ -16,9 +16,10 @@ export default async function JournalistNewArticlePage({ params }: Props) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const db = supabase as any;
 
-  const [{ data: categories }, { data: tags }] = await Promise.all([
+  const [{ data: categories }, { data: tags }, { data: selfAuthor }] = await Promise.all([
     db.from("categories").select("id, name").order("display_order"),
     db.from("tags").select("id, name").order("name"),
+    db.from("authors").select("id, display_name, role").eq("id", user.id),
   ]);
 
   const dashboardUrl = `/author/${id}/dashboard`;
@@ -39,7 +40,9 @@ export default async function JournalistNewArticlePage({ params }: Props) {
         <ArticleForm
           categories={categories ?? []}
           tags={tags ?? []}
+          authors={selfAuthor ?? []}
           authorId={user.id}
+          lockAuthor
           redirectTo={dashboardUrl}
         />
       </main>

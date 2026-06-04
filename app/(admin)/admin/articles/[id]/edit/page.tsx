@@ -18,12 +18,14 @@ export default async function EditArticlePage({ params }: Props) {
     { data: article },
     { data: categories },
     { data: tags },
+    { data: authors },
     { data: articleTags },
     { count: subscriberCount },
   ] = await Promise.all([
     db.from("articles").select("*, categories(name), authors(display_name)").eq("id", id).single(),
     db.from("categories").select("id, name").order("display_order"),
     db.from("tags").select("id, name").order("name"),
+    db.from("authors").select("id, display_name, role").order("display_name"),
     db.from("article_tags").select("tag_id").eq("article_id", id) as unknown as Promise<{ data: { tag_id: string }[] | null }>,
     db.from("subscribers").select("*", { count: "exact", head: true }).eq("active", true),
   ]);
@@ -43,6 +45,7 @@ export default async function EditArticlePage({ params }: Props) {
         article={article}
         categories={categories ?? []}
         tags={tags ?? []}
+        authors={authors ?? []}
         selectedTagIds={(articleTags ?? []).map((t: { tag_id: string }) => t.tag_id)}
         authorId={user.id}
       />

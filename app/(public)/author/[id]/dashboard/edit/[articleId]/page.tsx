@@ -21,11 +21,13 @@ export default async function JournalistEditArticlePage({ params }: Props) {
     { data: categories },
     { data: tags },
     { data: articleTags },
+    { data: selfAuthor },
   ] = await Promise.all([
     db.from("articles").select("*").eq("id", articleId).eq("author_id", id).single(),
     db.from("categories").select("id, name").order("display_order"),
     db.from("tags").select("id, name").order("name"),
     db.from("article_tags").select("tag_id").eq("article_id", articleId),
+    db.from("authors").select("id, display_name, role").eq("id", id),
   ]);
 
   // Article not found or doesn't belong to this journalist
@@ -52,8 +54,10 @@ export default async function JournalistEditArticlePage({ params }: Props) {
           article={article}
           categories={categories ?? []}
           tags={tags ?? []}
+          authors={selfAuthor ?? []}
           selectedTagIds={(articleTags ?? []).map((t: { tag_id: string }) => t.tag_id)}
           authorId={user.id}
+          lockAuthor
           redirectTo={dashboardUrl}
         />
       </main>

@@ -9,6 +9,7 @@ const AdminEditor = dynamic(() => import("./AdminEditor"), { ssr: false });
 
 interface Category { id: string; name: string; }
 interface Tag      { id: string; name: string; }
+interface Author   { id: string; display_name: string; role: string; }
 
 interface ArticleData {
   id?: string;
@@ -22,6 +23,7 @@ interface ArticleData {
   cover_image_url?: string | null;
   pdf_url?: string | null;
   pdf_url_mn?: string | null;
+  author_id?: string | null;
   category_id?: string | null;
   status?: "draft" | "published" | "archived";
   is_breaking?: boolean;
@@ -32,8 +34,10 @@ interface Props {
   article?: ArticleData;
   categories: Category[];
   tags: Tag[];
+  authors?: Author[];
   selectedTagIds?: string[];
   authorId: string;
+  lockAuthor?: boolean;
   redirectTo?: string;
 }
 
@@ -73,7 +77,7 @@ function PdfUploadField({ url, fileName, uploading, onUpload, onRemove }: {
   );
 }
 
-export default function ArticleForm({ article, categories, tags, selectedTagIds = [], authorId, redirectTo = "/admin/articles" }: Props) {
+export default function ArticleForm({ article, categories, tags, authors = [], selectedTagIds = [], authorId, lockAuthor = false, redirectTo = "/admin/articles" }: Props) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const isEditing = !!article?.id;
@@ -90,7 +94,8 @@ export default function ArticleForm({ article, categories, tags, selectedTagIds 
   const [status,      setStatus]     = useState<"draft"|"published"|"archived">(article?.status ?? "draft");
   const [isBreaking,  setIsBreaking] = useState(article?.is_breaking     ?? false);
   const [isFeatured,  setIsFeatured] = useState(article?.is_featured     ?? false);
-  const [pickedTagIds,setPickedTagIds] = useState<string[]>(selectedTagIds);
+  const [pickedTagIds,   setPickedTagIds]    = useState<string[]>(selectedTagIds);
+  const [selectedAuthorId, setSelectedAuthorId] = useState<string>(article?.author_id ?? authorId);
   const [coverUrl,      setCoverUrl]      = useState(article?.cover_image_url ?? "");
   const [pdfUrl,        setPdfUrl]        = useState(article?.pdf_url         ?? "");
   const [pdfUrlMn,      setPdfUrlMn]      = useState(article?.pdf_url_mn      ?? "");
@@ -183,13 +188,13 @@ export default function ArticleForm({ article, categories, tags, selectedTagIds 
         body:       articleType === "pdf" ? null : bodyEn,
         body_mn:    articleType === "pdf" ? null : (bodyMn || null),
         cover_image_url: coverUrl || null,
-        pdf_url:    articleType === "pdf" ? (pdfUrl || null) : null,
-        pdf_url_mn: articleType === "pdf" ? (pdfUrlMn || null) : null,
+        pdf_url:    pdfUrl || null,
+        pdf_url_mn: pdfUrlMn || null,
         category_id: categoryId || null,
         status,
         is_breaking: isBreaking,
         is_featured: isFeatured,
-        author_id: authorId,
+        author_id: selectedAuthorId || authorId,
       };
 
       let articleId = article?.id;
@@ -262,6 +267,25 @@ export default function ArticleForm({ article, categories, tags, selectedTagIds 
             {categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
           </select>
         </div>
+
+        {/* Author selector */}
+        <div className="col-span-2 md:col-span-1">
+          <label className={labelClass}>Author / Зохиогч</label>
+          {lockAuthor ? (
+            <div className={`${fieldClass} bg-gray-50 text-[--color-text-muted] cursor-not-allowed`}>
+              {authors.find(a => a.id === selectedAuthorId)?.display_name ?? "You"}
+            </div>
+          ) : (
+            <select value={selectedAuthorId} onChange={(e) => setSelectedAuthorId(e.target.value)} className={fieldClass}>
+              {authors.length === 0 && <option value={authorId}>— Current user —</option>}
+              {authors.map((a) => (
+                <option key={a.id} value={a.id}>
+                  {a.display_name} ({a.role})
+                </option>
+              ))}
+            </select>
+          )}
+        </div>
       </div>
 
       {/* Cover image */}
@@ -298,65 +322,83 @@ export default function ArticleForm({ article, categories, tags, selectedTagIds 
         </div>
 
         <div className="p-5 space-y-4">
-          {langTab === "en" ? (
-            <>
-              <div>
-                <label className={labelClass}>Title (English) *</label>
-                <input type="text" required value={titleEn}
-                  onChange={(e) => handleTitleEnChange(e.target.value)}
-                  className={fieldClass} placeholder="Article headline in English" />
-              </div>
-              <div>
-                <label className={labelClass}>Excerpt (English)</label>
-                <textarea value={excerptEn} onChange={(e) => setExcerptEn(e.target.value)}
-                  rows={3} className={fieldClass} placeholder="Short summary shown on article cards" />
-              </div>
-              {articleType === "normal" && (
+          {/* English — always mounted, hidden when MN tab active */}
+          <div style={{ display: langTab === "en" ? "flex" : "none" }} className="flex-col gap-4">
+            <div>
+              <label className={labelClass}>Title (English) *</label>
+              <input type="text" value={titleEn}
+                onChange={(e) => handleTitleEnChange(e.target.value)}
+                className={fieldClass} placeholder="Article headline in English" />
+            </div>
+            <div>
+              <label className={labelClass}>Excerpt (English)</label>
+              <textarea value={excerptEn} onChange={(e) => setExcerptEn(e.target.value)}
+                rows={3} className={fieldClass} placeholder="Short summary shown on article cards" />
+            </div>
+            {articleType === "normal" && (
+              <>
                 <div>
                   <label className={labelClass}>Body (English)</label>
                   <AdminEditor content={bodyEn as { type: string; html?: string }} onChange={setBodyEn} />
                 </div>
-              )}
-              {articleType === "pdf" && (
                 <div>
-                  <label className={labelClass}>PDF File — English *</label>
+                  <label className={labelClass}>PDF Attachment — English <span className="normal-case font-normal text-[--color-text-muted]">(optional)</span></label>
                   <PdfUploadField
                     url={pdfUrl} fileName={pdfFileName} uploading={pdfUploading}
                     onUpload={uploadPDF} onRemove={() => { setPdfUrl(""); setPdfFileName(null); }}
                   />
                 </div>
-              )}
-            </>
-          ) : (
-            <>
+              </>
+            )}
+            {articleType === "pdf" && (
               <div>
-                <label className={labelClass}>Гарчиг (Монгол)</label>
-                <input type="text" value={titleMn}
-                  onChange={(e) => setTitleMn(e.target.value)}
-                  className={fieldClass} placeholder="Мэдээний гарчиг монгол хэлээр" />
+                <label className={labelClass}>PDF File — English *</label>
+                <PdfUploadField
+                  url={pdfUrl} fileName={pdfFileName} uploading={pdfUploading}
+                  onUpload={uploadPDF} onRemove={() => { setPdfUrl(""); setPdfFileName(null); }}
+                />
               </div>
-              <div>
-                <label className={labelClass}>Товч агуулга (Монгол)</label>
-                <textarea value={excerptMn} onChange={(e) => setExcerptMn(e.target.value)}
-                  rows={3} className={fieldClass} placeholder="Мэдээний товч тайлбар монгол хэлээр" />
-              </div>
-              {articleType === "normal" && (
+            )}
+          </div>
+
+          {/* Mongolian — always mounted, hidden when EN tab active */}
+          <div style={{ display: langTab === "mn" ? "flex" : "none" }} className="flex-col gap-4">
+            <div>
+              <label className={labelClass}>Гарчиг (Монгол)</label>
+              <input type="text" value={titleMn}
+                onChange={(e) => setTitleMn(e.target.value)}
+                className={fieldClass} placeholder="Мэдээний гарчиг монгол хэлээр" />
+            </div>
+            <div>
+              <label className={labelClass}>Товч агуулга (Монгол)</label>
+              <textarea value={excerptMn} onChange={(e) => setExcerptMn(e.target.value)}
+                rows={3} className={fieldClass} placeholder="Мэдээний товч тайлбар монгол хэлээр" />
+            </div>
+            {articleType === "normal" && (
+              <>
                 <div>
                   <label className={labelClass}>Агуулга (Монгол)</label>
                   <AdminEditor content={bodyMn as { type: string; html?: string }} onChange={setBodyMn} />
                 </div>
-              )}
-              {articleType === "pdf" && (
                 <div>
-                  <label className={labelClass}>PDF файл — Монгол</label>
+                  <label className={labelClass}>PDF хавсралт — Монгол <span className="normal-case font-normal text-[--color-text-muted]">(заавал биш)</span></label>
                   <PdfUploadField
                     url={pdfUrlMn} fileName={pdfFileNameMn} uploading={pdfUploadingMn}
                     onUpload={uploadPDFMn} onRemove={() => { setPdfUrlMn(""); setPdfFileNameMn(null); }}
                   />
                 </div>
-              )}
-            </>
-          )}
+              </>
+            )}
+            {articleType === "pdf" && (
+              <div>
+                <label className={labelClass}>PDF файл — Монгол</label>
+                <PdfUploadField
+                  url={pdfUrlMn} fileName={pdfFileNameMn} uploading={pdfUploadingMn}
+                  onUpload={uploadPDFMn} onRemove={() => { setPdfUrlMn(""); setPdfFileNameMn(null); }}
+                />
+              </div>
+            )}
+          </div>
         </div>
       </div>
 

@@ -4,6 +4,7 @@ import { useLanguage } from "./LanguageProvider";
 import ArticleBody from "./ArticleBody";
 import AuthorCard from "./AuthorCard";
 import CategoryBadge from "./CategoryBadge";
+import PDFArticleClient from "./PDFArticleClient";
 import type { Json } from "@/types/database";
 
 interface Author { id: string; display_name: string; bio: string | null; avatar_url: string | null; role: "editor" | "journalist" | "contributor"; }
@@ -21,12 +22,14 @@ interface Props {
   reading_time_minutes: number | null;
   authors: Author | null;
   categories: Category | null;
+  pdf_url?: string | null;
+  pdf_url_mn?: string | null;
 }
 
 export default function ArticleContentClient({
   title, title_mn, excerpt, excerpt_mn, body, body_mn,
   cover_image_url, published_at, reading_time_minutes,
-  authors, categories,
+  authors, categories, pdf_url, pdf_url_mn,
 }: Props) {
   const { locale } = useLanguage();
 
@@ -75,6 +78,23 @@ export default function ArticleContentClient({
 
         <ArticleBody body={displayBody} />
       </article>
+
+      {/* Inline PDF viewer below the article */}
+      {(pdf_url || pdf_url_mn) && (
+        <div className="mt-4">
+          <div className="max-w-3xl mx-auto px-6 pb-4">
+            <p className="text-xs font-semibold uppercase tracking-widest text-[--color-text-muted] mb-4">
+              {locale === "mn" ? "PDF хавсралт" : "PDF Attachment"}
+            </p>
+          </div>
+          <PDFArticleClient
+            pdfUrl={pdf_url ?? null}
+            pdfUrlMn={pdf_url_mn ?? null}
+            title={displayTitle}
+            titleMn={title_mn}
+          />
+        </div>
+      )}
     </div>
   );
 }
