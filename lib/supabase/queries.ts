@@ -54,7 +54,7 @@ export async function getArticleBySlug(slug: string): QueryResult<ArticleWithTag
     const supabase = await createClient();
     return supabase
       .from("articles")
-      .select("*, categories(*), authors(*), article_tags(tags(*))")
+      .select("*, categories(*), authors(*), article_tags(tags(*)), article_authors(authors(*))")
       .eq("slug", slug)
       .eq("status", "published")
       .single();
@@ -102,15 +102,28 @@ export async function getAuthorById(id: string): QueryResult<AuthorRow> {
   });
 }
 
-export async function getArticlesByAuthor(authorId: string, limit = 20): QueryResult<ArticleWithRelations[]> {
+export async function getArticlesByAuthor(authorId: string, limit = 50): QueryResult<ArticleWithRelations[]> {
   return query<ArticleWithRelations[]>(async () => {
     const supabase = await createClient();
+
+    // Get article IDs from the junction table
+    const { data: junctionRows } = await supabase
+      .from("article_authors")
+      .select("article_id")
+      .eq("author_id", authorId);
+
+    const junctionIds = (junctionRows ?? []).map((r: { article_id: string }) => r.article_id);
+
+    // Collect all article IDs: primary author_id OR in junction table
+    const allIds = junctionIds.length > 0
+      ? `author_id.eq.${authorId},id.in.(${junctionIds.join(",")})`
+      : `author_id.eq.${authorId}`;
+
     return supabase
       .from("articles")
       .select("*, categories(*), authors(*)")
-      .eq("status", "published")
-      .eq("author_id", authorId)
-      .order("published_at", { ascending: false })
+      .or(allIds)
+      .order("created_at", { ascending: false })
       .limit(limit);
   });
 }

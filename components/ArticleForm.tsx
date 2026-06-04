@@ -36,6 +36,7 @@ interface Props {
   tags: Tag[];
   authors?: Author[];
   selectedTagIds?: string[];
+  selectedAuthorIds?: string[];
   authorId: string;
   lockAuthor?: boolean;
   redirectTo?: string;
@@ -77,7 +78,7 @@ function PdfUploadField({ url, fileName, uploading, onUpload, onRemove }: {
   );
 }
 
-export default function ArticleForm({ article, categories, tags, authors = [], selectedTagIds = [], authorId, lockAuthor = false, redirectTo = "/admin/articles" }: Props) {
+export default function ArticleForm({ article, categories, tags, authors = [], selectedTagIds = [], selectedAuthorIds = [], authorId, lockAuthor = false, redirectTo = "/admin/articles" }: Props) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const isEditing = !!article?.id;
@@ -94,8 +95,10 @@ export default function ArticleForm({ article, categories, tags, authors = [], s
   const [status,      setStatus]     = useState<"draft"|"published"|"archived">(article?.status ?? "draft");
   const [isBreaking,  setIsBreaking] = useState(article?.is_breaking     ?? false);
   const [isFeatured,  setIsFeatured] = useState(article?.is_featured     ?? false);
-  const [pickedTagIds,   setPickedTagIds]    = useState<string[]>(selectedTagIds);
-  const [selectedAuthorId, setSelectedAuthorId] = useState<string>(article?.author_id ?? authorId);
+  const [pickedTagIds,    setPickedTagIds]    = useState<string[]>(selectedTagIds);
+  const [pickedAuthorIds, setPickedAuthorIds] = useState<string[]>(
+    selectedAuthorIds.length > 0 ? selectedAuthorIds : (article?.author_id ? [article.author_id] : [authorId])
+  );
   const [coverUrl,      setCoverUrl]      = useState(article?.cover_image_url ?? "");
   const [pdfUrl,        setPdfUrl]        = useState(article?.pdf_url         ?? "");
   const [pdfUrlMn,      setPdfUrlMn]      = useState(article?.pdf_url_mn      ?? "");
@@ -132,6 +135,11 @@ export default function ArticleForm({ article, categories, tags, authors = [], s
 
   function toggleTag(id: string) {
     setPickedTagIds((prev) => prev.includes(id) ? prev.filter((t) => t !== id) : [...prev, id]);
+  }
+
+  function toggleAuthor(id: string) {
+    if (lockAuthor) return;
+    setPickedAuthorIds((prev) => prev.includes(id) ? prev.filter((a) => a !== id) : [...prev, id]);
   }
 
   async function uploadCover(file: File) {
@@ -209,11 +217,24 @@ export default function ArticleForm({ article, categories, tags, authors = [], s
       }
 
       if (articleId) {
+        // Sync tags
         await db.from("article_tags").delete().eq("article_id", articleId);
         if (pickedTagIds.length > 0) {
           await db.from("article_tags").insert(
             pickedTagIds.map((tag_id) => ({ article_id: articleId!, tag_id }))
           );
+        }
+        // Sync authors — wrapped in try/catch in case table doesn't exist yet
+        try {
+          const authorsToSave = lockAuthor ? [authorId] : pickedAuthorIds;
+          await db.from("article_authors").delete().eq("article_id", articleId);
+          if (authorsToSave.length > 0) {
+            await db.from("article_authors").insert(
+              authorsToSave.map((author_id) => ({ article_id: articleId!, author_id }))
+            );
+          }
+        } catch {
+          // table may not exist yet — non-fatal
         }
       }
 
@@ -268,25 +289,37 @@ export default function ArticleForm({ article, categories, tags, authors = [], s
           </select>
         </div>
 
-        {/* Author selector */}
-        <div className="col-span-2 md:col-span-1">
-          <label className={labelClass}>Author / Зохиогч</label>
-          {lockAuthor ? (
-            <div className={`${fieldClass} bg-gray-50 text-[--color-text-muted] cursor-not-allowed`}>
-              {authors.find(a => a.id === selectedAuthorId)?.display_name ?? "You"}
-            </div>
-          ) : (
-            <select value={selectedAuthorId} onChange={(e) => setSelectedAuthorId(e.target.value)} className={fieldClass}>
-              {authors.length === 0 && <option value={authorId}>— Current user —</option>}
-              {authors.map((a) => (
-                <option key={a.id} value={a.id}>
-                  {a.display_name} ({a.role})
-                </option>
-              ))}
-            </select>
+      </div>
+
+      {/* Author multi-select */}
+      {authors.length > 0 && (
+        <div>
+          <label className={labelClass}>
+            Authors / Зохиогчид
+            {!lockAuthor && <span className="normal-case font-normal text-[--color-text-muted] ml-1">(click to toggle)</span>}
+          </label>
+          <div className="flex flex-wrap gap-2">
+            {authors.map((author) => {
+              const selected = pickedAuthorIds.includes(author.id);
+              return (
+                <button key={author.id} type="button"
+                  onClick={() => toggleAuthor(author.id)}
+                  disabled={lockAuthor}
+                  className="text-xs font-semibold px-3 py-1.5 rounded-full border transition-colors"
+                  style={selected
+                    ? { backgroundColor: "#5B3ADB", color: "#fff", borderColor: "#5B3ADB" }
+                    : { backgroundColor: "#fff", color: "#000", borderColor: "#000" }
+                  }>
+                  {selected ? "✓ " : ""}{author.display_name}
+                </button>
+              );
+            })}
+          </div>
+          {pickedAuthorIds.length === 0 && (
+            <p className="text-xs text-red-500 mt-1">Select at least one author.</p>
           )}
         </div>
-      </div>
+      )}
 
       {/* Cover image */}
       <div>

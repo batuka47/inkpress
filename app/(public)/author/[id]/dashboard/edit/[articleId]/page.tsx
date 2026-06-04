@@ -23,7 +23,7 @@ export default async function JournalistEditArticlePage({ params }: Props) {
     { data: articleTags },
     { data: selfAuthor },
   ] = await Promise.all([
-    db.from("articles").select("*").eq("id", articleId).eq("author_id", id).single(),
+    db.from("articles").select("*").eq("id", articleId).single(),
     db.from("categories").select("id, name").order("display_order"),
     db.from("tags").select("id, name").order("name"),
     db.from("article_tags").select("tag_id").eq("article_id", articleId),

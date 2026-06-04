@@ -88,6 +88,14 @@ export type Database = {
         Insert: Database["public"]["Tables"]["article_tags"]["Row"];
         Update: Partial<Database["public"]["Tables"]["article_tags"]["Row"]>;
       };
+      article_authors: {
+        Row: {
+          article_id: string;
+          author_id: string;
+        };
+        Insert: Database["public"]["Tables"]["article_authors"]["Row"];
+        Update: Partial<Database["public"]["Tables"]["article_authors"]["Row"]>;
+      };
       breaking_news: {
         Row: {
           id: string;

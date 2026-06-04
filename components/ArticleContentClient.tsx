@@ -21,6 +21,7 @@ interface Props {
   published_at: string | null;
   reading_time_minutes: number | null;
   authors: Author | null;
+  coAuthors?: Author[];
   categories: Category | null;
   pdf_url?: string | null;
   pdf_url_mn?: string | null;
@@ -29,7 +30,7 @@ interface Props {
 export default function ArticleContentClient({
   title, title_mn, excerpt, excerpt_mn, body, body_mn,
   cover_image_url, published_at, reading_time_minutes,
-  authors, categories, pdf_url, pdf_url_mn,
+  authors, coAuthors = [], categories, pdf_url, pdf_url_mn,
 }: Props) {
   const { locale } = useLanguage();
 
@@ -71,9 +72,14 @@ export default function ArticleContentClient({
           </p>
         )}
 
-        <div className="flex items-center justify-between border-y border-[--color-rule] py-4 mb-10">
-          {authors && <AuthorCard author={authors} />}
-          {publishedAt && <time className="text-xs text-[--color-text-muted]" suppressHydrationWarning>{publishedAt}</time>}
+        <div className="flex items-start justify-between border-y border-[--color-rule] py-4 mb-10 gap-4 flex-wrap">
+          <div className="flex flex-col gap-2">
+            {coAuthors.length > 0
+              ? coAuthors.map(a => <AuthorCard key={a.id} author={a} />)
+              : authors && <AuthorCard author={authors} />
+            }
+          </div>
+          {publishedAt && <time className="text-xs text-[--color-text-muted] mt-1" suppressHydrationWarning>{publishedAt}</time>}
         </div>
 
         <ArticleBody body={displayBody} />

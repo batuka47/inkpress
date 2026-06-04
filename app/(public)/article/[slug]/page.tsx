@@ -56,6 +56,7 @@ export default async function ArticlePage({ params }: Props) {
       published_at={article.published_at ?? null}
       reading_time_minutes={article.reading_time_minutes ?? null}
       authors={article.authors ?? null}
+      coAuthors={((article as typeof article & { article_authors?: { authors: typeof article.authors }[] }).article_authors ?? []).map(r => r.authors).filter(Boolean) as typeof article.authors[]}
       categories={article.categories ?? null}
       pdf_url={a.pdf_url ?? null}
       pdf_url_mn={a.pdf_url_mn ?? null}
