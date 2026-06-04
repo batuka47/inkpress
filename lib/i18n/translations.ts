@@ -1,4 +1,4 @@
-﻿export type Locale = "mn" | "en";
+export type Locale = "mn" | "en";
 
 export const translations = {
   mn: {
@@ -13,7 +13,7 @@ export const translations = {
     navSearch:     "Хайх…",
 
     // Site tagline
-    tagline: "Мэдээ уншигдах ёстой байдлаар нь.",
+    tagline: "Амжилт Кибер Сургуулийн мэдээллийн платформ.",
 
     // Breaking ticker
     breaking: "Шуурхай мэдээ",
@@ -29,7 +29,7 @@ export const translations = {
     // Newsletter signup (inline)
     newsletterLabel:   "Мэдээллийн хуудас",
     newsletterHeading: "Мэдээллээ авч байгаарай",
-    newsletterBody:    "Хамгийн сүүлийн мэдээг имэйлдээ хүлээн авна уу. Спам илгээхгүй, хэдийд ч татгалзаж болно.",
+    newsletterBody:    "Сургуулийн хамгийн сүүлийн мэдээ, үйл явдлуудыг имэйлдээ хүлээн авна уу.",
     newsletterInput:   "your@email.com",
     newsletterBtn:     "Захиалах",
     newsletterBtnBusy: "Илгээж байна…",
@@ -38,26 +38,26 @@ export const translations = {
     errorGeneric:      "Алдаа гарлаа. Дахин оролдоно уу.",
 
     // Subscribe page
-    subscribePage_title:    "AmjiltPressAgency-д бүртгүүлэх",
-    subscribePage_subtitle: "Хамгийн сүүлийн мэдээнүүдийг имэйлдээ хүлээн авна уу.",
+    subscribePage_title:    "AmjiltPressAgency захиалах",
+    subscribePage_subtitle: "Амжилт Кибер Сургуулийн мэдээ, арга хэмжээний мэдээллийг имэйлдээ хүлээн авна уу.",
     subscribePage_name:     "Нэр (заавал биш)",
     subscribePage_namePh:   "Таны нэр",
     subscribePage_email:    "Имэйл *",
     subscribePage_emailPh:  "you@example.com",
-    subscribePage_btn:      "Бүртгүүлэх",
+    subscribePage_btn:      "Захиалах",
     subscribePage_btnBusy:  "Бүртгэж байна…",
-    subscribePage_success:  "Бүртгүүлсэн! Шинэ мэдээнүүдийг имэйлээр хүлээн авах болно.",
+    subscribePage_success:  "Амжилттай захиалагдлаа! Шинэ мэдээнүүдийг имэйлээр хүлээн авах болно.",
 
     // About page
     aboutHeroLabel:    "Бидний тухай",
-    aboutHeroHeadline: "Мэдээ уншигдах ёстой байдлаар нь.",
-    aboutHeroSubtitle: "AmjiltPressAgency нь уншигчиддаа үнэнч байх, мэдээллийг гоёмсог хэлбэрээр дамжуулах зорилготой бие даасан мэдээний хэвлэл юм.",
-    aboutMission_label: "Манай эрхэм зорилго",
-    aboutMission_p1: "Бид AmjiltPressAgency-ийг байгуулахдаа мэдээний салбар хоёр зүйлийг буруу хийсэн гэдэгт итгэсэн: хурдны төлөө нарийвчлалаа золиослож, дарааллын товшилтын төлөө дизайнаа золиослосон. Бид хоёуланг нь дахин барьж байна.",
-    aboutMission_p2: "Энэ сайт дахь мэдээ бичигдэж, эрхлэгдэж, зохиогдсоны дараа л нийтлэгдэнэ. Бид итгэлтэй болтол нийтэлдэггүй. Хардалт хайдаггүй. Уншлагыг хүндэтгэнэ.",
+    aboutHeroHeadline: "Амжилт Кибер Сургуулийн дуу хоолой.",
+    aboutHeroSubtitle: "AmjiltPressAgency нь Амжилт Кибер Сургуулийн сурагчдын бичсэн мэдээ, нийтлэл, шинжилгээг монгол болон англи хэлээр хүргэдэг сургуулийн мэдээллийн платформ юм.",
+    aboutMission_label: "Манай зорилго",
+    aboutMission_p1: "AmjiltPressAgency нь Амжилт Кибер Сургуулийн сурагчдад сэтгүүл зүйн дадлага олгох, сургуулийн амьдрал болон нийгмийн чухал асуудлуудыг олон нийтэд хүргэх зорилгоор байгуулагдсан.",
+    aboutMission_p2: "Бид сурагчдыг мэдээ бичих, эрхлэн гаргах, дэлхийд хүргэх чадвартай болгохыг зорьдог. Энэ платформ бол манай сурагчдын суралцах, бүтээх, өсөн дэвших орон зай юм.",
 
     // Footer
-    footerCopy: "AmjiltPressAgency. Бүх эрх хуулиар хамгаалагдсан.",
+    footerCopy: "AmjiltPressAgency — Амжилт Кибер Сургууль. Бүх эрх хуулиар хамгаалагдсан.",
   },
 
   en: {
@@ -72,7 +72,7 @@ export const translations = {
     navSearch:     "Search…",
 
     // Site tagline
-    tagline: "News as it should be read.",
+    tagline: "The news platform of Amjilt Cyber School.",
 
     // Breaking ticker
     breaking: "Breaking",
@@ -88,7 +88,7 @@ export const translations = {
     // Newsletter signup (inline)
     newsletterLabel:   "Newsletter",
     newsletterHeading: "Stay in the know",
-    newsletterBody:    "Get the latest articles delivered to your inbox. No spam, unsubscribe any time.",
+    newsletterBody:    "Get the latest school news and stories delivered to your inbox.",
     newsletterInput:   "your@email.com",
     newsletterBtn:     "Subscribe",
     newsletterBtnBusy: "Subscribing…",
@@ -98,7 +98,7 @@ export const translations = {
 
     // Subscribe page
     subscribePage_title:    "Subscribe to AmjiltPressAgency",
-    subscribePage_subtitle: "Get the latest articles delivered to your inbox.",
+    subscribePage_subtitle: "Get the latest news and stories from Amjilt Cyber School delivered to your inbox.",
     subscribePage_name:     "Name (optional)",
     subscribePage_namePh:   "Your name",
     subscribePage_email:    "Email *",
@@ -108,15 +108,15 @@ export const translations = {
     subscribePage_success:  "You're subscribed! You'll receive our latest articles by email.",
 
     // About page
-    aboutHeroLabel:    "About AmjiltPressAgency",
-    aboutHeroHeadline: "News as it should be read.",
-    aboutHeroSubtitle: "AmjiltPressAgency is an independent news publication committed to rigorous reporting, elegant presentation, and an unwavering loyalty to its readers.",
+    aboutHeroLabel:    "About Us",
+    aboutHeroHeadline: "The voice of Amjilt Cyber School.",
+    aboutHeroSubtitle: "AmjiltPressAgency is the student-powered news platform of Amjilt Cyber School — publishing articles, analyses and school news in both Mongolian and English.",
     aboutMission_label: "Our Mission",
-    aboutMission_p1: "We started AmjiltPressAgency because we believe the news industry got two things badly wrong: it sacrificed accuracy for speed, and design for clicks. We are rebuilding both.",
-    aboutMission_p2: "Every article on this site is written, edited, and designed to last. We do not publish until we are confident. We do not chase outrage. We respect your attention.",
+    aboutMission_p1: "AmjiltPressAgency was created to give Amjilt Cyber School students a real platform to practise journalism, share ideas, and cover stories that matter to their school and community.",
+    aboutMission_p2: "We believe every student has a story worth telling. This platform is where they learn to write, edit, and publish — building skills that go far beyond the classroom.",
 
     // Footer
-    footerCopy: "AmjiltPressAgency. All rights reserved.",
+    footerCopy: "AmjiltPressAgency — Amjilt Cyber School. All rights reserved.",
   },
 } as const;
 

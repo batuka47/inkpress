@@ -1,41 +1,72 @@
-﻿"use client";
+"use client";
 
 import Link from "next/link";
 import { useLanguage } from "@/components/LanguageProvider";
 
 const VALUES = {
   mn: [
-    { icon: "✦", title: "Бие даасан & Тэнцвэртэй", body: "Бид уншигчиддаа хариуцлагатай, зар сурталчилагч эсвэл улс төрийн ашиг сонирхолд биш. Редакцийн шийдвэрүүд маань зөвхөн үнэн ба нийтийн ашиг сонирхолд үйлчилнэ." },
-    { icon: "◈", title: "Хурдаас илүү гүнзгий", body: "Хурдан мэдэгдэх нь хялбар. Зөв мэдэгдэх нь хариуцлага шаарддаг. Бид нийтлэхийн өмнө баталгаажуулдаг, мөн нийтлэл нь бүрэн ойлгогдоход хэрэгтэй зайг авдаг." },
-    { icon: "◇", title: "Дизайн бол хүндэтгэл", body: "Сайн бичвэр, өргөн цагаан зай, зохистой загвар — энэ бол чимэглэл биш, уншигчийн цаг хугацаа, анхаарлыг хүндэтгэх арга юм." },
-    { icon: "◉", title: "Хариуцлага", body: "Бид алдаагаа олон нийтэд засдаг, эх сурвалжийг холбодог, зохиолчдоо нэрлэдэг. Ил тод байдал бол итгэлцлийн суурь юм." },
+    { icon: "✦", title: "Сурагчдын дуу хоолой", body: "Энэ платформ бол Амжилт Кибер Сургуулийн сурагчдынх. Бид сурагчдын санаа бодол, туршлага, бүтээлийг олон нийтэд хүргэдэг." },
+    { icon: "◈", title: "Хоёр хэлний мэдээлэл", body: "Бид монгол болон англи хэл дээр нийтэлдэг — энэ нь сурагчдын хоёр хэлний чадварыг хөгжүүлэхэд тусалдаг." },
+    { icon: "◇", title: "Мэргэжлийн стандарт", body: "Сургуулийн сонин ч гэсэн мэргэжлийн стандартыг сахина. Бид мэдээ бичих, эрхлэн гаргахдаа үнэн зөв байдлыг эрхэмлэдэг." },
+    { icon: "◉", title: "Суралцах орчин", body: "AmjiltPressAgency бол сурагчдад сэтгүүл зүй, контент бүтээлт, медиа ажиллагааны дадлага олгодог бодит орчин юм." },
   ],
   en: [
-    { icon: "✦", title: "Independent & Unbiased", body: "We answer to our readers, not advertisers or political interests. Our editorial decisions are made solely in service of truth and public interest." },
-    { icon: "◈", title: "Depth Over Speed", body: "Breaking fast is easy. Breaking right takes discipline. We verify before we publish, and we take the space a story needs to be fully understood." },
-    { icon: "◇", title: "Design as Respect", body: "Good typography, generous whitespace, and deliberate layout aren't decoration — they are a form of respect for the reader's time and attention." },
-    { icon: "◉", title: "Accountability", body: "We correct mistakes publicly, link to primary sources, and name our writers. Transparency is the foundation of trust." },
+    { icon: "✦", title: "Student-Powered", body: "This platform belongs to the students of Amjilt Cyber School. We amplify student voices, ideas, experiences and creative work." },
+    { icon: "◈", title: "Bilingual Publishing", body: "We publish in both Mongolian and English — helping students develop strong communication skills in two languages." },
+    { icon: "◇", title: "Professional Standards", body: "Even as a school publication, we hold ourselves to professional standards — accuracy, fairness and clarity in every article." },
+    { icon: "◉", title: "A Space to Learn", body: "AmjiltPressAgency is a real-world environment where students learn to write, edit, publish and take responsibility for their work." },
   ],
 };
 
-const TEAM = {
+const DEV_TEAM = {
   mn: [
-    { name: "Амжилт Б.", role: "Үүсгэн байгуулагч & Ерөнхий редактор", bio: "Хэвлэлийн арван жилийн туршлагатай редактор. Хамгийн сайн сэтгүүл зүй нь яриа шиг санагддаг гэж үздэг." },
-    { name: "Редакцийн баг", role: "Сурвалжлагчид & Хувь нэмэр оруулагчид", bio: "Улс төр, технологи, соёл, дэлхийн мэдээг хамарсан штатын болон бие даасан сурвалжлагчдын баг." },
-    { name: "Дизайн студи", role: "Визуал & Бүтээгдэхүүн", bio: "Нарийн төвөгтэй мэдээллийг тодорхой, уншлагын туршлага бүрийг боломгийн болгоход дуртай дотоод дизайнерууд." },
+    { name: "Бат-Эрдэнэ", role: "Вэб хөгжүүлэгч", initial: "Б" },
+    { name: "Бат-Энх", role: "UI/UX дизайнер", initial: "Б" },
   ],
   en: [
-    { name: "Amjilt B.", role: "Founder & Editor-in-Chief", bio: "Former print editor with a decade in digital media. Believes the best journalism feels like a conversation." },
-    { name: "Editorial Desk", role: "Reporters & Contributors", bio: "A rotating team of staff writers and independent contributors covering politics, technology, culture, and the world." },
-    { name: "Design Studio", role: "Visual & Product", bio: "In-house designers obsessed with making complex information clear and every reading experience feel considered." },
+    { name: "Bat-Erdene", role: "Web Developer", initial: "B" },
+    { name: "Bat-Enkh", role: "UI/UX Designer", initial: "B" },
   ],
 };
+
+const EDITORIAL_HEADS = {
+  mn: [
+    { name: "Гантулга", role: "Багш — Ерөнхий зохицуулагч", initial: "Г" },
+    { name: "Энгүүн", role: "Ерөнхий редактор", initial: "Э" },
+    { name: "Мандахнар", role: "Ерөнхий редактор", initial: "М" },
+  ],
+  en: [
+    { name: "Gantula", role: "Teacher — Chief Supervisor", initial: "G" },
+    { name: "Enguun", role: "Editor-in-Chief", initial: "E" },
+    { name: "Mandakhnar", role: "Editor-in-Chief", initial: "M" },
+  ],
+};
+
+const REPORTERS = [
+  "Luvsankhaimchig Sarangerel",
+  "Erkhembayar Emmatuguldur",
+  "Ayush Ashidbat",
+  "Anar Subedei",
+  "Otgonragchaa Bat-Uchral",
+  "Dembereldagwa Choidorj",
+  "Altan-Od Enkhriimaa",
+  "Munkh-Erdene Khulan",
+  "Uuganbayr Khuslen",
+  "Bat-Ulzii Sodbolor",
+  "Enkh-Amgalan Tuguldur",
+  "Munkhbat Khangerel",
+  "Ganbold Enkh-Amgalan",
+  "Battulga Azjargal",
+];
 
 export default function AboutPage() {
   const { locale, t } = useLanguage();
 
-  const values = VALUES[locale];
-  const team   = TEAM[locale];
+  const values        = VALUES[locale];
+  const devTeam       = DEV_TEAM[locale];
+  const editorialHeads = EDITORIAL_HEADS[locale];
+
+  const isMn = locale === "mn";
 
   return (
     <div className="min-h-screen bg-white">
@@ -74,7 +105,7 @@ export default function AboutPage() {
       <section className="py-20 px-6 border-b border-[--color-rule] bg-[#fafafa]">
         <div className="max-w-5xl mx-auto">
           <h2 className="text-[11px] font-semibold uppercase tracking-[0.15em] text-gray-400 mb-12">
-            {locale === "mn" ? "Бидний баримталдаг зүйлс" : "What We Stand For"}
+            {isMn ? "Бидний баримталдаг зарчмууд" : "What We Stand For"}
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
             {values.map((v) => (
@@ -90,25 +121,72 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Team */}
+      {/* Dev Team */}
       <section className="py-20 px-6 border-b border-[--color-rule]">
         <div className="max-w-5xl mx-auto">
-          <h2 className="text-[11px] font-semibold uppercase tracking-[0.15em] text-gray-400 mb-12">
-            {locale === "mn" ? "Баг" : "The Team"}
+          <h2 className="text-[11px] font-semibold uppercase tracking-[0.15em] text-gray-400 mb-2">
+            {isMn ? "Хөгжүүлэлтийн баг" : "Development Team"}
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {team.map((member) => (
-              <div key={member.name} className="border border-[--color-rule] rounded-2xl p-6 bg-white">
-                <div className="w-10 h-10 rounded-full bg-[--color-accent-light] flex items-center justify-center mb-4">
-                  <span className="text-[--color-accent] font-bold text-sm">
-                    {member.name.charAt(0)}
-                  </span>
+          <p className="text-sm text-gray-400 mb-10">
+            {isMn
+              ? "Платформыг бүтээж, хадгалж буй техникийн баг."
+              : "The technical team that built and maintains this platform."}
+          </p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-lg">
+            {devTeam.map((m) => (
+              <div key={m.name} className="border border-[--color-rule] rounded-2xl p-6 bg-white">
+                <div className="w-12 h-12 rounded-full bg-[--color-accent-light] flex items-center justify-center mb-4">
+                  <span className="text-[--color-accent] font-black text-lg">{m.initial}</span>
                 </div>
-                <h3 className="font-bold text-[--color-ink] text-base">{member.name}</h3>
-                <p className="text-[11px] font-semibold uppercase tracking-wider text-[--color-accent] mt-0.5 mb-3">
-                  {member.role}
+                <h3 className="font-bold text-[--color-ink] text-base">{m.name}</h3>
+                <p className="text-[11px] font-semibold uppercase tracking-wider text-[--color-accent] mt-0.5">
+                  {m.role}
                 </p>
-                <p className="text-sm text-gray-500 leading-relaxed">{member.bio}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Editorial Board */}
+      <section className="py-20 px-6 border-b border-[--color-rule] bg-[#fafafa]">
+        <div className="max-w-5xl mx-auto">
+          <h2 className="text-[11px] font-semibold uppercase tracking-[0.15em] text-gray-400 mb-2">
+            {isMn ? "Редакцийн зөвлөл" : "Editorial Board"}
+          </h2>
+          <p className="text-sm text-gray-400 mb-10">
+            {isMn
+              ? "Мэдээний чанар, үнэн зөв байдлыг хянадаг удирдлагын баг."
+              : "The leadership team overseeing editorial quality and accuracy."}
+          </p>
+
+          {/* 3 heads */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-12">
+            {editorialHeads.map((m) => (
+              <div key={m.name} className="border border-[--color-accent] bg-[--color-accent-light] rounded-2xl p-6">
+                <div className="w-12 h-12 rounded-full bg-[--color-accent] flex items-center justify-center mb-4">
+                  <span className="text-white font-black text-lg">{m.initial}</span>
+                </div>
+                <h3 className="font-bold text-[--color-ink] text-base">{m.name}</h3>
+                <p className="text-[11px] font-semibold uppercase tracking-wider text-[--color-accent] mt-0.5">
+                  {m.role}
+                </p>
+              </div>
+            ))}
+          </div>
+
+          {/* Reporters */}
+          <h3 className="text-[11px] font-semibold uppercase tracking-[0.15em] text-gray-400 mb-6">
+            {isMn ? "Сурагч сурвалжлагчид" : "Student Reporters"}
+          </h3>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+            {REPORTERS.map((name) => (
+              <div key={name}
+                className="border border-[--color-rule] rounded-xl px-4 py-3 bg-white flex items-center gap-3">
+                <div className="w-7 h-7 rounded-full bg-[--color-accent-light] flex items-center justify-center shrink-0">
+                  <span className="text-[--color-accent] font-bold text-xs">{name.charAt(0)}</span>
+                </div>
+                <span className="text-sm font-medium text-[--color-ink] leading-tight">{name}</span>
               </div>
             ))}
           </div>
@@ -119,35 +197,35 @@ export default function AboutPage() {
       <section className="py-20 px-6">
         <div className="max-w-3xl mx-auto">
           <h2 className="text-[11px] font-semibold uppercase tracking-[0.15em] text-gray-400 mb-8">
-            {locale === "mn" ? "Холбоо барих" : "Get in Touch"}
+            {isMn ? "Холбоо барих" : "Get in Touch"}
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             <div className="border border-[--color-rule] rounded-2xl p-6">
               <h3 className="font-bold text-[--color-ink] mb-1">
-                {locale === "mn" ? "Редакци" : "Editorial"}
+                {isMn ? "Редакц" : "Editorial"}
               </h3>
               <p className="text-sm text-gray-500 mb-3">
-                {locale === "mn"
-                  ? "Мэдээний дохио, засвар, хэвлэлийн асуулга, редакцийн санал хүсэлт."
-                  : "Story tips, corrections, press inquiries, and editorial feedback."}
+                {isMn
+                  ? "Нийтлэлийн санал, залруулга болон бусад хүсэлтийг хүлээн авна."
+                  : "Article submissions, corrections and general enquiries."}
               </p>
-              <a href="mailto:editorial@amjiltpressagency.com"
+              <a href="mailto:amjiltpress@gmail.com"
                 className="text-sm font-medium text-[--color-accent] hover:underline">
-                editorial@amjiltpressagency.com
+                amjiltpress@gmail.com
               </a>
             </div>
             <div className="border border-[--color-rule] rounded-2xl p-6">
               <h3 className="font-bold text-[--color-ink] mb-1">
-                {locale === "mn" ? "Мэдээллийн хуудас" : "Newsletter"}
+                {isMn ? "Мэдээллийн хуудас" : "Newsletter"}
               </h3>
               <p className="text-sm text-gray-500 mb-3">
-                {locale === "mn"
-                  ? "Шилдэг мэдээнүүдийг имэйлдээ хүлээн авна уу — spam илгээхгүй."
-                  : "Get our best stories delivered to your inbox — no noise, no spam."}
+                {isMn
+                  ? "Сургуулийн шинэ мэдээ, нийтлэлүүдийг имэйлдээ хүлээн авна уу."
+                  : "Subscribe to receive the latest school news and articles by email."}
               </p>
               <Link href="/subscribe"
                 className="inline-block text-sm font-semibold text-white bg-[--color-accent] px-4 py-2 rounded-lg hover:opacity-90 transition-opacity">
-                {locale === "mn" ? "Үнэгүй захиалах →" : "Subscribe free →"}
+                {isMn ? "Захиалах →" : "Subscribe free →"}
               </Link>
             </div>
           </div>
