@@ -11,6 +11,7 @@ interface Category {
   description: string | null;
   color_hex: string | null;
   display_order: number | null;
+  is_main_nav: boolean;
 }
 
 function slugify(t: string) {
@@ -39,7 +40,7 @@ export default function CategoriesManager({ categories: initial }: { categories:
       description: description.trim() || null,
       display_order: categories.length + 1,
     }).select().single();
-    if (data) setCategories((prev) => [...prev, data]);
+    if (data) setCategories((prev) => [...prev, { is_main_nav: false, ...data }]);
     setName(""); setNameMn(""); setDescription("");
   }
 
@@ -49,6 +50,13 @@ export default function CategoriesManager({ categories: initial }: { categories:
       .eq("id", id).select().single();
     if (data) setCategories((prev) => prev.map((c) => c.id === id ? data : c));
     setEditId(null);
+  }
+
+  async function toggleMainNav(id: string, current: boolean) {
+    const { data } = await db().from("categories")
+      .update({ is_main_nav: !current })
+      .eq("id", id).select().single();
+    if (data) setCategories((prev) => prev.map((c) => c.id === id ? data : c));
   }
 
   async function remove(id: string) {
@@ -79,27 +87,29 @@ export default function CategoriesManager({ categories: initial }: { categories:
 
       {/* List */}
       <div className="bg-white border border-[--color-rule] rounded-xl overflow-hidden">
-        <div className="grid grid-cols-12 gap-4 px-5 py-2.5 bg-[#F9FAFB] border-b border-[--color-rule] text-xs font-semibold uppercase tracking-widest text-[--color-text-muted]">
-          <span className="col-span-3">English Name</span>
-          <span className="col-span-3">Монгол нэр</span>
+        <div className="grid grid-cols-12 gap-3 px-5 py-2.5 bg-[#F9FAFB] border-b border-[--color-rule] text-xs font-semibold uppercase tracking-widest text-[--color-text-muted]">
+          <span className="col-span-2">English</span>
+          <span className="col-span-2">Монгол</span>
           <span className="col-span-2">Slug</span>
           <span className="col-span-2">Description</span>
+          <span className="col-span-2">Main Nav</span>
           <span className="col-span-2">Actions</span>
         </div>
 
         {categories.length === 0 ? (
           <p className="text-sm text-[--color-text-muted] text-center py-10">No categories yet.</p>
         ) : categories.map((cat) => (
-          <div key={cat.id} className="grid grid-cols-12 gap-4 px-5 py-3 border-b border-[--color-rule] last:border-0 items-center">
+          <div key={cat.id} className="grid grid-cols-12 gap-3 px-5 py-3 border-b border-[--color-rule] last:border-0 items-center">
             {editId === cat.id ? (
               <>
                 <input value={editName} onChange={(e) => setEditName(e.target.value)}
-                  placeholder="English" className={`col-span-3 ${fieldCls}`} />
+                  placeholder="English" className={`col-span-2 ${fieldCls}`} />
                 <input value={editNameMn} onChange={(e) => setEditNameMn(e.target.value)}
-                  placeholder="Монгол" className={`col-span-3 ${fieldCls}`} />
-                <span className="col-span-2 text-xs text-[--color-text-muted]">{slugify(editName)}</span>
+                  placeholder="Монгол" className={`col-span-2 ${fieldCls}`} />
+                <span className="col-span-2 text-xs text-[--color-text-muted] font-mono">{slugify(editName)}</span>
                 <input value={editDesc} onChange={(e) => setEditDesc(e.target.value)}
-                  className={`col-span-2 ${fieldCls}`} />
+                  placeholder="Description" className={`col-span-2 ${fieldCls}`} />
+                <span className="col-span-2" />
                 <div className="col-span-2 flex gap-2">
                   <button onClick={() => save(cat.id)}
                     className="text-xs font-medium px-3 py-1 rounded-full bg-green-100 text-green-700 hover:bg-green-200 transition-colors">Save</button>
@@ -109,10 +119,20 @@ export default function CategoriesManager({ categories: initial }: { categories:
               </>
             ) : (
               <>
-                <span className="col-span-3 text-sm font-medium">{cat.name}</span>
-                <span className="col-span-3 text-sm text-[--color-text-muted]">{cat.name_mn ?? <span className="text-[--color-text-muted] opacity-40 italic text-xs">—</span>}</span>
+                <span className="col-span-2 text-sm font-medium">{cat.name}</span>
+                <span className="col-span-2 text-sm text-[--color-text-muted]">{cat.name_mn ?? <span className="italic text-xs opacity-40">—</span>}</span>
                 <span className="col-span-2 text-xs text-[--color-text-muted] font-mono">{cat.slug}</span>
                 <span className="col-span-2 text-xs text-[--color-text-muted] line-clamp-1">{cat.description ?? "—"}</span>
+                <div className="col-span-2">
+                  <button onClick={() => toggleMainNav(cat.id, cat.is_main_nav)}
+                    className={`text-xs font-semibold px-3 py-1 rounded-full transition-colors ${
+                      cat.is_main_nav
+                        ? "bg-green-100 text-green-700 hover:bg-green-200"
+                        : "bg-gray-100 text-gray-500 hover:bg-gray-200"
+                    }`}>
+                    {cat.is_main_nav ? "✓ In nav" : "Not in nav"}
+                  </button>
+                </div>
                 <div className="col-span-2 flex gap-2">
                   <button onClick={() => { setEditId(cat.id); setEditName(cat.name); setEditNameMn(cat.name_mn ?? ""); setEditDesc(cat.description ?? ""); }}
                     className="text-xs font-medium px-3 py-1 rounded-full bg-[--color-accent-light] text-[--color-accent] hover:bg-violet-200 transition-colors">Edit</button>

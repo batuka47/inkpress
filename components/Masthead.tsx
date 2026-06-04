@@ -1,35 +1,30 @@
-﻿"use client";
+"use client";
 
 import Link from "next/link";
 import { useState } from "react";
 import SearchBar from "./SearchBar";
 import { useLanguage } from "./LanguageProvider";
 
-interface Category { name: string; name_mn?: string | null; slug: string; }
+interface Category { name: string; name_mn?: string | null; slug: string; is_main_nav?: boolean; }
 
 interface Props {
+  mainCategories?: Category[];
   extraCategories?: Category[];
 }
 
-export default function Masthead({ extraCategories = [] }: Props) {
+export default function Masthead({ mainCategories = [], extraCategories = [] }: Props) {
   const { locale, setLocale, t } = useLanguage();
   const [menuOpen, setMenuOpen] = useState(false);
   const [moreOpen, setMoreOpen] = useState(false);
 
-  const MAIN_LINKS = [
-    { label: t("navPolitics"), href: "/category/politics" },
-    { label: t("navTech"),     href: "/category/tech" },
-    { label: t("navCulture"),  href: "/category/culture" },
-    { label: t("navWorld"),    href: "/category/world" },
-    { label: t("navAbout"),    href: "/about" },
-  ];
+  const label = (c: Category) => (locale === "mn" && c.name_mn ? c.name_mn : c.name);
 
-  const allLinks = [
-    ...MAIN_LINKS,
-    ...extraCategories.map((c) => ({
-      label: locale === "mn" && c.name_mn ? c.name_mn : c.name,
-      href: `/category/${c.slug}`,
-    })),
+  const ABOUT = { label: locale === "mn" ? t("navAbout") : "About Us", href: "/about" };
+
+  const allMobileLinks = [
+    ...mainCategories.map(c => ({ label: label(c), href: `/category/${c.slug}` })),
+    ...extraCategories.map(c => ({ label: label(c), href: `/category/${c.slug}` })),
+    ABOUT,
   ];
 
   return (
@@ -45,12 +40,18 @@ export default function Masthead({ extraCategories = [] }: Props) {
 
         {/* Nav — desktop */}
         <nav className="hidden md:flex items-center gap-1 flex-1">
-          {MAIN_LINKS.map((link) => (
-            <Link key={link.href} href={link.href}
+          {mainCategories.map((c) => (
+            <Link key={c.slug} href={`/category/${c.slug}`}
               className="px-3 py-1.5 text-sm font-medium text-[--color-accent] hover:bg-[--color-accent-light] rounded-md transition-colors">
-              {link.label}
+              {label(c)}
             </Link>
           ))}
+
+          {/* About Us */}
+          <Link href="/about"
+            className="px-3 py-1.5 text-sm font-medium text-[--color-accent] hover:bg-[--color-accent-light] rounded-md transition-colors">
+            {ABOUT.label}
+          </Link>
 
           {/* Extra categories dropdown */}
           {extraCategories.length > 0 && (
@@ -68,7 +69,7 @@ export default function Masthead({ extraCategories = [] }: Props) {
                     <Link key={c.slug} href={`/category/${c.slug}`}
                       onClick={() => setMoreOpen(false)}
                       className="block px-4 py-2 text-sm text-[--color-accent] hover:bg-[--color-accent-light] transition-colors">
-                      {locale === "mn" && c.name_mn ? c.name_mn : c.name}
+                      {label(c)}
                     </Link>
                   ))}
                 </div>
@@ -109,7 +110,7 @@ export default function Masthead({ extraCategories = [] }: Props) {
 
       {menuOpen && (
         <div className="md:hidden bg-white border-t border-[--color-rule] px-6 py-4 flex flex-col gap-2">
-          {allLinks.map((link) => (
+          {allMobileLinks.map((link) => (
             <Link key={link.href} href={link.href}
               className="text-sm font-medium text-[--color-accent] py-1"
               onClick={() => setMenuOpen(false)}>
@@ -118,7 +119,6 @@ export default function Masthead({ extraCategories = [] }: Props) {
           ))}
           <div className="mt-2 flex items-center gap-3">
             <SearchBar compact />
-            {/* Mobile language switcher */}
             <div className="flex items-center border border-[--color-rule] rounded-lg overflow-hidden text-xs font-semibold ml-auto">
               {(["mn", "en"] as const).map((lang) => (
                 <button key={lang} onClick={() => setLocale(lang)}

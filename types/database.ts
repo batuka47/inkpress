@@ -52,6 +52,7 @@ export type Database = {
           description: string | null;
           color_hex: string | null;
           display_order: number | null;
+          is_main_nav: boolean;
         };
         Insert: Omit<Database["public"]["Tables"]["categories"]["Row"], "id"> & {
           id?: string;

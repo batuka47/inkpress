@@ -2,25 +2,23 @@ import Masthead from "@/components/Masthead";
 import Footer from "@/components/Footer";
 import { createClient } from "@/lib/supabase/server";
 
-const MAIN_SLUGS = ["politics", "tech", "culture", "world"];
-
 export default async function PublicLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient();
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { data: categories } = await (supabase as any)
     .from("categories")
-    .select("name, name_mn, slug")
+    .select("name, name_mn, slug, is_main_nav")
     .order("display_order", { ascending: true });
 
-  const extra = (categories ?? []).filter(
-    (c: { slug: string }) => !MAIN_SLUGS.includes(c.slug)
-  );
+  const all   = (categories ?? []) as { name: string; name_mn?: string | null; slug: string; is_main_nav: boolean }[];
+  const main  = all.filter(c => c.is_main_nav);
+  const extra = all.filter(c => !c.is_main_nav);
 
   return (
     <>
-      <Masthead extraCategories={extra} />
+      <Masthead mainCategories={main} extraCategories={extra} />
       <main className="flex-1">{children}</main>
-      <Footer categories={categories ?? []} />
+      <Footer categories={all} />
     </>
   );
 }

@@ -13,10 +13,16 @@ export default async function CategoriesPage() {
     .select("id, name, name_mn, slug, description, color_hex, display_order")
     .order("display_order", { ascending: true });
 
+  // Normalize — is_main_nav may not exist until migration is run
+  const normalized = (categories ?? []).map((c: Record<string, unknown>) => ({
+    ...c,
+    is_main_nav: c.is_main_nav ?? false,
+  }));
+
   return (
     <div className="space-y-6">
       <h1 className="text-2xl font-bold">Categories</h1>
-      <CategoriesManager categories={categories ?? []} />
+      <CategoriesManager categories={normalized} />
     </div>
   );
 }
