@@ -202,7 +202,7 @@ export default function ArticleForm({ article, categories, tags, authors = [], s
         status,
         is_breaking: isBreaking,
         is_featured: isFeatured,
-        author_id: selectedAuthorId || authorId,
+        author_id: pickedAuthorIds[0] || authorId,
       };
 
       let articleId = article?.id;
